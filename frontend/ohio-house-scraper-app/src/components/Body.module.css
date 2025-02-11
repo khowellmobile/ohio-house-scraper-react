@@ -57,8 +57,14 @@ button > p {
 .output {
     width: 100%;
     height: calc(100% - 2rem);
+    padding: 0.5rem;
 
     border-radius: 0.25rem;
+    overflow: auto;
 
     outline: 1px solid rgb(185, 185, 185);
+}
+
+.output::-webkit-scrollbar {
+    display: none;
 }

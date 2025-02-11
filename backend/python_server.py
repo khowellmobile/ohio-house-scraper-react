@@ -1,5 +1,5 @@
 import asyncio
-import websockets
+import websockets # type: ignore
 import json
 import time
 
@@ -41,7 +41,6 @@ async def start_server():
     server = await websockets.serve(handler, "localhost", 65432)
     print("WebSocket server running on ws://localhost:65432")
     await server.wait_closed()
-
 
 # Run the server
 if __name__ == "__main__":
