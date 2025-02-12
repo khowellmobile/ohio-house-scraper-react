@@ -6,6 +6,11 @@ const Body = () => {
     const [isScraping, setIsScraping] = useState(false);
     const [csvJson, setCsvJson] = useState();
 
+    function addMessage() {
+        setMessages((prevMessages) => [...prevMessages, "HEllO"]);
+        console.log("hello");
+    }
+
     const handleScrapingStart = () => {
         const socket = new WebSocket("ws://localhost:65432");
 
@@ -23,7 +28,6 @@ const Body = () => {
             /* Checking is message is json */
             try {
                 message = JSON.parse(event.data);
-                
             } catch (e) {
                 message = event.data;
                 setMessages((prevMessages) => [...prevMessages, message]);
@@ -56,6 +60,9 @@ const Body = () => {
                 </button>
                 <button onClick={handleStopScraping} disabled={!isScraping}>
                     <p>Save Output</p>
+                </button>
+                <button onClick={addMessage}>
+                    <p>Add</p>
                 </button>
             </div>
             <div className={classes.outputContainer}>

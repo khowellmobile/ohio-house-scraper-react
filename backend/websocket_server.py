@@ -3,7 +3,7 @@ import websockets  # type: ignore
 import json
 import queue
 
-from ohioHouseScraper import run_scraper
+from houseScraper import run_scraper
 
 
 # This will hold the text updates for the frontend.
@@ -28,19 +28,16 @@ def add_to_ui_queue(text):
     """Function to add updates to the UI queue and print them."""
     print_queue.put(text + "\n")
 
-def formatSendCSV(websocket, people):
-    print(people)
-    """ 
-    {} 
-    """
 
-    
+async def sendJson(websocket, people_json):
+    print(people_json)
+    await websocket.send(people_json)
 
 
 async def run_scraper_and_send_updates(websocket):
     """Run the scraper and send progress updates."""
-    await asyncio.to_thread(run_scraper, add_to_ui_queue, formatSendCSV)
-    add_to_ui_queue("Finished Processing")
+    await asyncio.to_thread(run_scraper, add_to_ui_queue, sendJson, websocket)
+    add_to_ui_queue("Finished from websocket")
 
 
 async def handler(websocket):
