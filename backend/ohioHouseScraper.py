@@ -49,7 +49,7 @@ ai_prompt_text = """
     """
 
 
-def run_scraper(add_to_ui_queue):
+def run_scraper(add_to_ui_queue, formatSendCSV):
     """rep_names = ["munira-abdullahi", "darnell-t-brewer", "karen-brownlee"]"""
     rep_names = []
     url = "https://ohiohouse.gov/members/directory?start=1&sort=LastName"
@@ -71,15 +71,16 @@ def run_scraper(add_to_ui_queue):
     while not people_queue.empty():
         people.update(people_queue.get())
 
+    print(people)
+
     while not error_queue.empty():
         print(error_queue.get())
-
-        print(people)
         
     add_to_ui_queue("Finished Processing")
+    add_to_ui_queue("stop_scraper")
 
 
-def getInfo(rep_name, add_to_ui_queue):
+def getInfo(rep_name):
     address_keywords = ["77", "High", "Street", "St.", "South", "S.", "Floor"]
 
     url = f"https://ohiohouse.gov/members/{rep_name}"
@@ -115,7 +116,7 @@ def getInfo(rep_name, add_to_ui_queue):
     return home_town, address, phone_number, fax_number
 
 
-def getBio(rep_name, add_to_ui_queue):
+def getBio(rep_name, add_to_ui_queue, error_queue):
 
     url = f"https://ohiohouse.gov/members/{rep_name}/biography"
     response = requests.get(url)
@@ -143,18 +144,21 @@ def getBio(rep_name, add_to_ui_queue):
 
             except Exception as e:
                 print(f"Gemini Response Error: {e}")
-                add_to_ui_queue(f"Gemini error. Adding '{rep_name}' to error queue")
+                add_to_ui_queue(f"Gemini Response Error: Adding '{rep_name}' to error queue")
+                error_queue.put(rep_name)
                 return "AI Error"
 
             values = response.text.split("|")
 
             if len(values) < 4:
+                add_to_ui_queue(f"Gemini Formatting Error. Adding '{rep_name}' to error queue")
+                error_queue.put(rep_name)
                 return "AI Error"
 
             return values[0], values[1], values[2], values[3]
 
 
-def getCommittees(rep_name, add_to_ui_queue):
+def getCommittees(rep_name):
     url = f"https://ohiohouse.gov/members/{rep_name}/committees"
     response = requests.get(url)
 
@@ -186,7 +190,10 @@ def process_rep(rep_name, result_queue, error_queue, add_to_ui_queue):
     rep_obj = {}
 
     def fetch_function_results(func, func_name, rep_name):
-        rep_obj[func_name] = func(rep_name, add_to_ui_queue)
+        if func_name == "getBio":
+            rep_obj[func_name] = func(rep_name, add_to_ui_queue, error_queue)
+        else:
+            rep_obj[func_name] = func(rep_name)
 
     threads = [
         threading.Thread(
@@ -209,8 +216,6 @@ def process_rep(rep_name, result_queue, error_queue, add_to_ui_queue):
         thread.join()
     add_to_ui_queue(f"Finishing Thread : {rep_name} at {getTime()}")
 
-    if "getBio" in rep_obj.keys() and rep_obj["getBio"] == "AI Error":
-        error_queue.put(rep_name)
     result_queue.put({rep_name: rep_obj})
 
 

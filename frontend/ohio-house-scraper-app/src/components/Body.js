@@ -4,19 +4,30 @@ import { useState } from "react";
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
+    const [csvJson, setCsvJson] = useState();
 
     const handleScrapingStart = () => {
         const socket = new WebSocket("ws://localhost:65432");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");
-            socket.send("start_scraping"); 
-            setIsScraping(true); 
+            socket.send("start_scraping");
+            setIsScraping(true);
         };
 
         socket.onmessage = (event) => {
             console.log("Message from server:", event.data);
-            setMessages((prevMessages) => [...prevMessages, event.data]);
+
+            let message;
+
+            /* Checking is message is json */
+            try {
+                message = JSON.parse(event.data);
+                
+            } catch (e) {
+                message = event.data;
+                setMessages((prevMessages) => [...prevMessages, message]);
+            }
         };
 
         socket.onerror = (error) => {
