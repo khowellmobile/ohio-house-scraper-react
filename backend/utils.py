@@ -23,9 +23,9 @@ def get_representative_list():
     return rep_names
 
 
-def checkURLResponse(response):
-    if response.status_code:
-        if response.status_code != 200:
+async def checkURLResponse(response):
+    if response.status:
+        if response.status != 200:
             return 1
         else:
             return 0

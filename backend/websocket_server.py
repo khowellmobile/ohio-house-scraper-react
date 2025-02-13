@@ -3,7 +3,7 @@ import websockets  # type: ignore
 import json
 import queue
 
-from houseScraper import run_scraper
+from houseScraper_async import run_scraper
 
 
 # This will hold the text updates for the frontend.
@@ -36,7 +36,7 @@ async def sendJson(websocket, people_json):
 
 async def run_scraper_and_send_updates(websocket):
     """Run the scraper and send progress updates."""
-    await asyncio.to_thread(run_scraper, add_to_ui_queue, sendJson, websocket)
+    await run_scraper(add_to_ui_queue, sendJson, websocket)
     add_to_ui_queue("Finished from websocket")
 
 
