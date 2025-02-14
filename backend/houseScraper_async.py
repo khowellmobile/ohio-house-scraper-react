@@ -1,12 +1,18 @@
 import asyncio
-import aiohttp
-from bs4 import BeautifulSoup
+import aiohttp # type: ignore
+from bs4 import BeautifulSoup # type: ignore
 from google import genai  # Assuming this supports async, or you can wrap it
 import queue
 import os
 from dotenv import load_dotenv  # type: ignore
 
-from utils import get_representative_list, get_ai_prompt, getTime, checkURLResponse
+from utils import (
+    get_representative_list,
+    get_ai_prompt,
+    getTime,
+    checkURLResponse,
+    create_json_list,
+)
 
 # Getting ai client
 load_dotenv()
@@ -28,13 +34,15 @@ async def fetch_data(session, url):
 
 
 # Fetch representative information
-async def get_info(session, rep_name, error_queue):
+async def get_info(session, rep_name, add_to_ui_queue, error_queue):
     address_keywords = ["77", "High", "Street", "St.", "South", "S.", "Floor"]
     url = f"https://ohiohouse.gov/members/{rep_name}"
     response = await fetch_data(session, url)
 
     if not response:
+        add_to_ui_queue(f"Error: Response Error. Adding {rep_name} to error queue")
         error_queue.put(rep_name)
+        return "Response Error", "Response Error", "Response Error", "Response Error"
 
     soup = BeautifulSoup(response, "html.parser")
 
@@ -62,6 +70,11 @@ async def get_info(session, rep_name, error_queue):
 async def get_bio(session, rep_name, add_to_ui_queue, error_queue):
     url = f"https://ohiohouse.gov/members/{rep_name}/biography"
     response = await fetch_data(session, url)
+
+    if not response:
+        add_to_ui_queue(f"Error: Response Error. Adding {rep_name} to error queue")
+        error_queue.put(rep_name)
+        return "Response Error", "Response Error", "Response Error", "Response Error"
 
     soup = BeautifulSoup(response, "html.parser")
 
@@ -104,9 +117,14 @@ async def get_bio(session, rep_name, add_to_ui_queue, error_queue):
 
 
 # Fetch committees information
-async def get_committees(session, rep_name, error_queue):
+async def get_committees(session, rep_name, add_to_ui_queue, error_queue):
     url = f"https://ohiohouse.gov/members/{rep_name}/committees"
     response = await fetch_data(session, url)
+
+    if not response:
+        add_to_ui_queue(f"Error: Response Error. Adding {rep_name} to error queue")
+        error_queue.put(rep_name)
+        return "Response Error", "Response Error", "Response Error", "Response Error"
 
     soup = BeautifulSoup(response, "html.parser")
 
@@ -123,9 +141,9 @@ async def process_rep(session, rep_name, add_to_ui_queue, result_queue, error_qu
 
     # Run all the async functions concurrently for each rep
     tasks = [
-        get_info(session, rep_name),
+        get_info(session, rep_name, add_to_ui_queue, error_queue),
         get_bio(session, rep_name, add_to_ui_queue, error_queue),
-        get_committees(session, rep_name),
+        get_committees(session, rep_name, add_to_ui_queue, error_queue),
     ]
     add_to_ui_queue(f"Processing: {rep_name}")
     results = await asyncio.gather(*tasks)
@@ -154,6 +172,7 @@ async def process_batch(session, batch, add_to_ui_queue, result_queue, error_que
             process_rep(session, rep_name, add_to_ui_queue, result_queue, error_queue)
         )
         tasks.append(task)
+        await asyncio.sleep(3)
 
     await asyncio.gather(*tasks)
 
@@ -162,7 +181,6 @@ async def process_batch(session, batch, add_to_ui_queue, result_queue, error_que
 async def run_scraper(add_to_ui_queue, sendJson, websocket):
     rep_names = get_representative_list()
 
-    # Create a single aiohttp session to reuse for all requests
     async with aiohttp.ClientSession() as session:
         batch_size = 15
         total_batches = len(rep_names) // batch_size + (
@@ -191,7 +209,6 @@ async def run_scraper(add_to_ui_queue, sendJson, websocket):
         while not error_queue.empty():
             print(error_queue.get())
 
-        print(people)
+        people_json = create_json_list(people)
 
-        """ people_json = create_json_list(people)
-        sendJson(websocket, people_json) """
+        await sendJson(websocket, people_json)

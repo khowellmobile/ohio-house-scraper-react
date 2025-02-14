@@ -30,7 +30,6 @@ def add_to_ui_queue(text):
 
 
 async def sendJson(websocket, people_json):
-    print(people_json)
     await websocket.send(people_json)
 
 

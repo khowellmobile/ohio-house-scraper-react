@@ -1,15 +1,10 @@
 import classes from "./Body.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
     const [csvJson, setCsvJson] = useState();
-
-    function addMessage() {
-        setMessages((prevMessages) => [...prevMessages, "HEllO"]);
-        console.log("hello");
-    }
 
     const handleScrapingStart = () => {
         const socket = new WebSocket("ws://localhost:65432");
@@ -21,13 +16,12 @@ const Body = () => {
         };
 
         socket.onmessage = (event) => {
-            console.log("Message from server:", event.data);
-
             let message;
 
             /* Checking is message is json */
             try {
                 message = JSON.parse(event.data);
+                setCsvJson(message);
             } catch (e) {
                 message = event.data;
                 setMessages((prevMessages) => [...prevMessages, message]);
@@ -48,6 +42,61 @@ const Body = () => {
         };
     };
 
+    useEffect(() => {
+        if (csvJson) {
+            console.log(csvJson, "This should be valid");
+        }
+    }, [csvJson]);
+
+    const convertJsonToCSV = (csvJson) => {
+        const headers = [
+            "Name",
+            "Hometown",
+            "Address",
+            "Phone",
+            "Fax",
+            "Education",
+            "Politics",
+            "Employment",
+            "Community",
+            "Committees",
+        ];
+
+        let csvContent = headers.join("\t") + "\n"; 
+
+        for (const key in csvJson) {
+            if (csvJson.hasOwnProperty(key)) {
+                const person = csvJson[key];
+                const row = [
+                    key,
+                    person.hometown,
+                    person.address,
+                    person.phone,
+                    person.fax,
+                    person.education,
+                    person.politics,
+                    person.employment,
+                    person.community,
+                    person.committees,
+                ].join("\t");
+
+                csvContent += row + "\n";
+            }
+        }
+
+        const blob = new Blob([csvContent], { type: "text/plain" });
+
+        // Create a download link for the CSV file
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "representatives_data.txt";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        console.log(csvJson);
+    };
+
     const handleStopScraping = () => {
         setIsScraping(false);
     };
@@ -58,11 +107,8 @@ const Body = () => {
                 <button onClick={handleScrapingStart} disabled={isScraping}>
                     <p>Run Scraper</p>
                 </button>
-                <button onClick={handleStopScraping} disabled={!isScraping}>
+                <button onClick={() => convertJsonToCSV(csvJson)}>
                     <p>Save Output</p>
-                </button>
-                <button onClick={addMessage}>
-                    <p>Add</p>
                 </button>
             </div>
             <div className={classes.outputContainer}>
