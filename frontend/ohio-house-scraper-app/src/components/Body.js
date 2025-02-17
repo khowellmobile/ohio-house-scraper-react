@@ -7,7 +7,7 @@ const Body = () => {
     const [csvJson, setCsvJson] = useState();
 
     const handleScrapingStart = () => {
-        const socket = new WebSocket("ws://localhost:65432");
+        const socket = new WebSocket("ws://localhost:50000");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");

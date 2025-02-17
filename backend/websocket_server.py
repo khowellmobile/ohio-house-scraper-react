@@ -54,8 +54,8 @@ async def handler(websocket):
 
 async def start_server():
     """Start the WebSocket server."""
-    server = await websockets.serve(handler, "localhost", 65432)
-    print("WebSocket server running on ws://localhost:65432")
+    server = await websockets.serve(handler, "localhost", 50000)
+    print("WebSocket server running on ws://localhost:50000")
     await server.wait_closed()
 
 
