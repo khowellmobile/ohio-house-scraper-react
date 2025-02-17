@@ -16,7 +16,8 @@ async def send_to_frontend(websocket):
         try:
             # Try to get the next message from the queue (non-blocking)
             text = print_queue.get_nowait()
-            if text == "stop_scraper":
+            if text == "stop_scraping":
+                websocket.close()
                 break
             await websocket.send(text)
         except queue.Empty:
@@ -54,8 +55,8 @@ async def handler(websocket):
 
 async def start_server():
     """Start the WebSocket server."""
-    server = await websockets.serve(handler, "0.0.0.0", 50000)
-    print("WebSocket server running on ws://0.0.0.0:50000")
+    server = await websockets.serve(handler, "localhost", 65432)
+    print("WebSocket server running on ws://localhost:65432")
     await server.wait_closed()
 
 

@@ -176,31 +176,33 @@ async def process_batch(session, batch, add_to_ui_queue, result_queue, error_que
 
     await asyncio.gather(*tasks)
 
+async def create_run_batches(rep_names, batch_size, add_to_ui_queue, result_queue, error_queue, session):
+    total_batches = len(rep_names) // batch_size + (1 if len(rep_names) % batch_size else 0)
+
+    for i in range(total_batches):
+        batch = rep_names[i * batch_size : (i + 1) * batch_size]
+
+        add_to_ui_queue(f"Starting batch {i + 1}/{total_batches}...")
+
+        await process_batch(
+            session, batch, add_to_ui_queue, result_queue, error_queue
+        )
+
+        if i < total_batches - 1:
+            add_to_ui_queue(f"Waiting 60 seconds to launch next batch...")
+            await asyncio.sleep(60)
+
+
 
 # Main runner function (handling session and batches)
 async def run_scraper(add_to_ui_queue, sendJson, websocket):
     rep_names = get_representative_list()
 
     async with aiohttp.ClientSession() as session:
-        batch_size = 15
-        total_batches = len(rep_names) // batch_size + (
-            1 if len(rep_names) % batch_size else 0
-        )
-
         result_queue = queue.Queue()
         error_queue = queue.Queue()
 
-        for i in range(total_batches):
-            batch = rep_names[i * batch_size : (i + 1) * batch_size]
-            add_to_ui_queue(f"Starting batch {i + 1}/{total_batches}...")
-
-            await process_batch(
-                session, batch, add_to_ui_queue, result_queue, error_queue
-            )
-
-            if i < total_batches - 1:
-                add_to_ui_queue(f"Waiting 60 seconds to launch next batch...")
-                await asyncio.sleep(60)
+        await create_run_batches(rep_names, 15, add_to_ui_queue, result_queue, error_queue, session)
 
         people = {}
         while not result_queue.empty():
@@ -209,6 +211,19 @@ async def run_scraper(add_to_ui_queue, sendJson, websocket):
         while not error_queue.empty():
             print(error_queue.get())
 
+        if not error_queue.empty():
+            add_to_ui_queue("Starting to process response and format errors...")
+
+        while not error_queue.empty():
+            await process_rep(session, error_queue.get(), add_to_ui_queue, result_queue, error_queue)
+            asyncio.sleep(4)
+
+        # Adding corrected reps to peeople
+        while not result_queue.empty():
+            people.update(result_queue.get())
+
         people_json = create_json_list(people)
 
         await sendJson(websocket, people_json)
+
+        add_to_ui_queue("stop_scraping")

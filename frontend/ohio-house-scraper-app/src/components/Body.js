@@ -7,7 +7,7 @@ const Body = () => {
     const [csvJson, setCsvJson] = useState();
 
     const handleScrapingStart = () => {
-        const socket = new WebSocket("ws://18.222.113.56:50000");
+        const socket = new WebSocket("ws://localhost:65432");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");
@@ -44,7 +44,7 @@ const Body = () => {
 
     useEffect(() => {
         if (csvJson) {
-            console.log(csvJson, "This should be valid");
+            console.log(csvJson);
         }
     }, [csvJson]);
 
@@ -107,7 +107,7 @@ const Body = () => {
                 <button onClick={handleScrapingStart} disabled={isScraping}>
                     <p>Run Scraper</p>
                 </button>
-                <button onClick={() => convertJsonToCSV(csvJson)}>
+                <button onClick={() => convertJsonToCSV(csvJson)} disabled={isScraping}>
                     <p>Save Output</p>
                 </button>
             </div>
