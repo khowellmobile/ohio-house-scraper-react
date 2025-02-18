@@ -1,5 +1,7 @@
 # ohio-house-scraper-react
-This project is a web scraper web application designed to collect detailed information about members of the Ohio House of Representatives. It scrapes data such as:
+This project is a web scraper web application designed to collect detailed information about members of the Ohio House of Representatives.
+
+It scrapes data such as:
 
 - Hometown
 - Contact information (address, phone, fax)
@@ -8,6 +10,7 @@ This project is a web scraper web application designed to collect detailed infor
 
 The application is built using a **React** frontend for the user interface and **Python** (with `aiohttp`, `asyncio`, `BeautifulSoup`, and **WebSocket**) for the backend scraper.
 
+Click [here](ec2-18-222-113-56.us-east-2.compute.amazonaws.com) for current hosting location
 ## Features
 - **Real-time Scraping**: The scraper fetches data about each representative and sends status updates to the frontend using WebSockets.
 - **Error Handling**: The scraper will retry errors on failed attempts and provide updates on the frontend.
