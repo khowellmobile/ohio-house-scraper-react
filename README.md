@@ -10,7 +10,7 @@ It scrapes data such as:
 
 The application is built using a **React** frontend for the user interface and **Python** (with `aiohttp`, `asyncio`, `BeautifulSoup`, and **WebSocket**) for the backend scraper.
 
-Click [here](ec2-18-222-113-56.us-east-2.compute.amazonaws.com) for current hosting location
+Click [here](http://ec2-18-222-113-56.us-east-2.compute.amazonaws.com) for current hosting location
 ## Features
 - **Real-time Scraping**: The scraper fetches data about each representative and sends status updates to the frontend using WebSockets.
 - **Error Handling**: The scraper will retry errors on failed attempts and provide updates on the frontend.
