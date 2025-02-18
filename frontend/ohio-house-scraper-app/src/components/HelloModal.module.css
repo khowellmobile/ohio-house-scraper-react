@@ -1,0 +1,62 @@
+.modalOverlay {
+    background-color: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.mainContainer {
+    width: 50rem;
+    height: 30rem;
+    padding: 1.5rem;
+
+    border-radius: 0.5rem;
+
+    background-color: white;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mainContainer > h2 {
+    font-weight: 400;
+}
+
+.textContent {
+    width: 100%;
+}
+
+.textContent > h3 {
+    font-weight: 500;
+}
+
+.textContent > p {
+    margin-bottom: 0.5rem;
+}
+
+.closeModalButton {
+    width: 15rem;
+    padding: 0.25rem 0.5rem;
+
+    background-color: rgb(41, 41, 54);
+    color: white;
+
+    border-radius: 0.25rem;
+    border: none;
+    outline: none;
+
+    font-family: "poppins";
+
+    cursor: pointer;
+}
+

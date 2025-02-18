@@ -1,10 +1,13 @@
 import classes from "./Body.module.css";
 import { useState, useEffect, useRef } from "react";
+import HelloModal from "./HelloModal";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
     const [csvJson, setCsvJson] = useState();
+
+    const [isModalOpen, setIsModalOpen] = useState(true);
 
     const scrollRef = useRef(null);
 
@@ -105,31 +108,35 @@ const Body = () => {
         console.log(csvJson);
     };
 
-    const handleStopScraping = () => {
-        setIsScraping(false);
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
     };
 
     return (
-        <div className={classes.mainContainer}>
-            <div className={classes.tools}>
-                <button onClick={handleScrapingStart} disabled={isScraping}>
-                    <p>Run Scraper</p>
-                </button>
-                <button onClick={() => convertJsonToCSV(csvJson)} disabled={isScraping}>
-                    <p>Save Output</p>
-                </button>
-            </div>
-            <div className={classes.outputContainer}>
-                <div className={classes.outputHeader}>
-                    <h2>Status:</h2>
+        <>
+            {isModalOpen && <HelloModal handleCloseModal={handleCloseModal} />}
+
+            <div className={classes.mainContainer}>
+                <div className={classes.tools}>
+                    <button onClick={handleScrapingStart} disabled={isScraping}>
+                        <p>Run Scraper</p>
+                    </button>
+                    <button onClick={() => convertJsonToCSV(csvJson)} disabled={isScraping}>
+                        <p>Save Output</p>
+                    </button>
                 </div>
-                <div className={classes.output} ref={scrollRef}>
-                    {messages.map((message, index) => (
-                        <p key={index}>{message}</p>
-                    ))}
+                <div className={classes.outputContainer}>
+                    <div className={classes.outputHeader}>
+                        <h2>Status:</h2>
+                    </div>
+                    <div className={classes.output} ref={scrollRef}>
+                        {messages.map((message, index) => (
+                            <p key={index}>{message}</p>
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
