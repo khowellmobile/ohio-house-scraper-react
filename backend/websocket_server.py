@@ -27,12 +27,20 @@ import asyncio
 import websockets  # type: ignore
 import json
 import queue
+import logging
 
 from houseScraper_async import run_scraper
 
 
 # This will hold the text updates for the frontend.
 print_queue = queue.Queue()
+
+
+logging.basicConfig(
+    filename='websocket.log',
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+)
 
 
 async def send_to_frontend(websocket):
@@ -104,8 +112,13 @@ async def run_scraper_and_send_updates(websocket):
         websocket (websockets.WebSocketClientProtocol): The WebSocket connection
         to the frontend used to communicate to the front end.
     """
-    await run_scraper(add_to_ui_queue, sendJson, websocket)
-    add_to_ui_queue("Finished from websocket")
+    try:
+        await run_scraper(add_to_ui_queue, sendJson, websocket)
+        add_to_ui_queue("Finished from websocket")
+    except Exception as e:
+        # Log the error and notify the client if something goes wrong
+        logging.error(f"Error occurred while running scraper: {e}")
+        add_to_ui_queue(f"Error occurred: {e}. This error has been logged.")
 
 
 async def handler(websocket):
@@ -120,6 +133,9 @@ async def handler(websocket):
         to the frontend used to send and receive messages from the front end.
     """
     print("Connection Made")
+
+    client_ip = websocket.remote_address[0]
+    logging.info(f'Connection made from IP: {client_ip}')
 
     start_message = await websocket.recv()
     print(f"Received from frontend: {start_message}")
