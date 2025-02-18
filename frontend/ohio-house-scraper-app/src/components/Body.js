@@ -1,13 +1,15 @@
 import classes from "./Body.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
     const [csvJson, setCsvJson] = useState();
 
+    const scrollRef = useRef(null);
+
     const handleScrapingStart = () => {
-        const socket = new WebSocket("ws://localhost:65432");
+        const socket = new WebSocket("ws://18.222.113.56:50000");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");
@@ -34,6 +36,7 @@ const Body = () => {
 
         socket.onclose = () => {
             console.log("Disconnected from WebSocket server");
+            setMessages((prevMessages) => [...prevMessages, "Scraper Finished"]);
             setIsScraping(false);
         };
 
@@ -41,6 +44,11 @@ const Body = () => {
             socket.close();
         };
     };
+
+    useEffect(() => {
+        const container = scrollRef.current;
+        container.scrollTop = container.scrollHeight;
+    }, [messages]);
 
     useEffect(() => {
         if (csvJson) {
@@ -62,7 +70,7 @@ const Body = () => {
             "Committees",
         ];
 
-        let csvContent = headers.join("\t") + "\n"; 
+        let csvContent = headers.join("\t") + "\n";
 
         for (const key in csvJson) {
             if (csvJson.hasOwnProperty(key)) {
@@ -115,7 +123,7 @@ const Body = () => {
                 <div className={classes.outputHeader}>
                     <h2>Status:</h2>
                 </div>
-                <div className={classes.output}>
+                <div className={classes.output} ref={scrollRef}>
                     {messages.map((message, index) => (
                         <p key={index}>{message}</p>
                     ))}

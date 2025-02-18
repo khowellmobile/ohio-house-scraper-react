@@ -6,7 +6,6 @@ import re
 
 
 def get_representative_list():
-    """rep_names = ["munira-abdullahi", "darnell-t-brewer", "karen-brownlee"]"""
     rep_names = []
     url = "https://ohiohouse.gov/members/directory?start=1&sort=LastName"
     response = requests.get(url)
@@ -15,7 +14,7 @@ def get_representative_list():
 
     rep_name_divs = soup.find_all("div", class_="media-overlay-caption-text-line-1")
 
-    for div in rep_name_divs[:30]:
+    for div in rep_name_divs:
         # Use re.sub in future
         rep_names.append(
             div.text.strip().replace(" ", "-").replace(".", "").replace(",", "").lower()
@@ -96,11 +95,11 @@ def get_ai_prompt(combined_bio):
 def create_json_list(people_dict):
     for key, val in people_dict.items():
         for sub_key, sub_val in val.items():
-            val[sub_key] = re.sub(r'\s+', ' ', sub_val).replace(", ,", "")
-            val[sub_key] = re.sub(r'[\r\n\u2028\u2029]+', ' ', sub_val)
+            val[sub_key] = re.sub(r"\s+", " ", sub_val).replace(", ,", "")
+            val[sub_key] = re.sub(r"[\r\n\u2028\u2029]+", " ", sub_val)
 
     people_json = json.dumps(people_dict)
 
-    people_json = re.sub(r'[\r\n\u2028\u2029]+', ' ', people_json)
+    people_json = re.sub(r"[\r\n\u2028\u2029]+", " ", people_json)
 
     return people_json

@@ -16,13 +16,19 @@ async def send_to_frontend(websocket):
         try:
             # Try to get the next message from the queue (non-blocking)
             text = print_queue.get_nowait()
-            if text == "stop_scraping":
-                websocket.close()
+
+            # Try sending a message, catch ConnectionClosed exception if closed
+            try:
+                await websocket.send(text)
+            except websockets.exceptions.ConnectionClosed:
+                # If the WebSocket is closed, stop trying to send messages
+                print("WebSocket is closed. Stopping sending messages.")
                 break
-            await websocket.send(text)
+
         except queue.Empty:
             pass
-        await asyncio.sleep(0.1)  # To prevent busy-waiting
+        
+        await asyncio.sleep(0.1)
 
 
 def add_to_ui_queue(text):
@@ -32,6 +38,7 @@ def add_to_ui_queue(text):
 
 async def sendJson(websocket, people_json):
     await websocket.send(people_json)
+    await websocket.close()
 
 
 async def run_scraper_and_send_updates(websocket):
@@ -55,8 +62,8 @@ async def handler(websocket):
 
 async def start_server():
     """Start the WebSocket server."""
-    server = await websockets.serve(handler, "localhost", 65432)
-    print("WebSocket server running on ws://localhost:65432")
+    server = await websockets.serve(handler, "0.0.0.0", 50000)
+    print("WebSocket server running on ws://0.0.0.0:50000")
     await server.wait_closed()
 
 
