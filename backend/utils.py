@@ -1,3 +1,25 @@
+""" 
+Ohio House Representatives Utils
+
+This script holds various utility functions to be used throughout the scraper
+
+Functions:
+    def get_representative_list(): Scrapes for list of all Ohio Representatives
+    async def checkURLResponse(response): Checks URL response for errors
+    def getTime(): Formats the current time into hours, minutes, seconds
+    def get_ai_prompt(combined_bio): Creates ai prompt to guide the AI
+    def create_json_list(people_dict): Formats a dictionary of reps into json format
+    
+Libraries:
+    BeautifulSoup: Helps format scraped pages
+    requests: Used to handle http requests
+    json: Used for formatting into json
+    re: Used for pattern matching
+
+Author: Kent Howell [khowellmobile@gmail.com]
+Date: 2/18/2025
+"""
+
 from bs4 import BeautifulSoup  # type: ignore
 import requests  # type: ignore
 import time
@@ -6,6 +28,18 @@ import re
 
 
 def get_representative_list():
+    """
+    Scrapes the list of representatives from the Ohio House of Representatives website.
+
+    Extracts and cleans the names of representatives, removing unwanted characters
+    and converting the names to lowercase.
+
+    Args:
+        None
+
+    Returns:
+        list: A list of cleaned and formatted representative names.
+    """
     rep_names = []
     url = "https://ohiohouse.gov/members/directory?start=1&sort=LastName"
     response = requests.get(url)
@@ -24,6 +58,18 @@ def get_representative_list():
 
 
 async def checkURLResponse(response):
+    """
+    Checks the HTTP response status.
+
+    Verifies whether the HTTP status code is 200 (OK). Returns `1` for non-200 status
+    codes, indicating an error, and `0` for successful responses.
+
+    Args:
+        response (aiohttp.ClientResponse): The HTTP response to check.
+
+    Returns:
+        int: 1 if the response status is not 200, 0 if it is 200.
+    """
     if response.status:
         if response.status != 200:
             return 1
@@ -34,6 +80,18 @@ async def checkURLResponse(response):
 
 
 def getTime():
+    """
+    Retrieves the current time formatted as HH:MM:SS.
+
+    Uses the `time` module to get the current local time and formats it to a string
+    in the format HH:MM:SS.
+
+    Args:
+        None
+
+    Returns:
+        str: The current time in HH:MM:SS format.
+    """
     current_time = time.localtime()
     formatted_time = time.strftime("%H:%M:%S", current_time)
 
@@ -41,6 +99,19 @@ def getTime():
 
 
 def get_ai_prompt(combined_bio):
+    """
+    Generates an AI prompt for summarizing a representative's biography.
+
+    The prompt provides specific instructions for summarizing various sections of a
+    representative's biography (education, political experience, employment, community involvement).
+    The biography is combined with the prompt to guide the AI.
+
+    Args:
+        combined_bio (str): The full biography of a representative to be summarized.
+
+    Returns:
+        str: The AI prompt concatenated with the biography.
+    """
     ai_prompt_text = """ The following is a biography of a member of the Ohio State House of Representatives. Based on the biography, return a summarization following these instructions:
 
         Summarization Format:
@@ -93,6 +164,18 @@ def get_ai_prompt(combined_bio):
 
 
 def create_json_list(people_dict):
+    """
+    Converts the dictionary of people data into a formatted JSON string.
+
+    Iterates through the `people_dict`, cleans and standardizes each value by removing
+    unwanted whitespace and newlines, and then converts the dictionary to a JSON string.
+
+    Args:
+        people_dict (dict): A dictionary containing people data to be formatted.
+
+    Returns:
+        str: A JSON-formatted string of the cleaned `people_dict`.
+    """
     for key, val in people_dict.items():
         for sub_key, sub_val in val.items():
             val[sub_key] = re.sub(r"\s+", " ", sub_val).replace(", ,", "")

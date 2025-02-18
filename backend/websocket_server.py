@@ -1,3 +1,28 @@
+""" 
+Ohio House Representatives Scraper Web Socket Server
+
+This script handles creation and regulation of the websocket used for communicating
+between the frontend and backend of the scraper. This file also handles communication between
+The scraper itself and this file.
+
+Functions:
+    async def send_to_frontend(websocket): Sends messages to the front end from print_queue
+    def add_to_ui_queue(text): Add messages to the print_queue (used as callback)
+    async def sendJson(websocket, people_json): Sends final message to frontend and closes websocket
+    async def run_scraper_and_send_updates(websocket): Runs scraper and sends progress updates to the frontend.
+    async def handler(websocket): Handles WebSocket connection and manage scraping flow.
+    async def start_server(): Starts the WebSocket server to listen for connections and handle scraping.
+
+Libraries:
+    asyncio: handles async functions
+    websockets: communication with front end
+    json: formatting of data
+    queue: used for holding messages for frontend
+
+Author: Kent Howell [khowellmobile@gmail.com]
+Date: 2/18/2025
+"""
+
 import asyncio
 import websockets  # type: ignore
 import json
@@ -11,7 +36,17 @@ print_queue = queue.Queue()
 
 
 async def send_to_frontend(websocket):
-    """Send updates to the frontend via WebSocket."""
+    """
+    Sends updated to the frontend via a websocket
+
+    Continuously checks global print_queue for new messages and sends them
+    to the frontend via the passed websocket. Ensures there is no blocking
+    and breaks loop when websocket is closed
+
+    Args:
+        websocket (websockets.WebSocketClientProtocol): The WebSocket connection
+        to the frontend.
+    """
     while True:
         try:
             # Try to get the next message from the queue (non-blocking)
@@ -27,28 +62,63 @@ async def send_to_frontend(websocket):
 
         except queue.Empty:
             pass
-        
+
         await asyncio.sleep(0.1)
 
 
 def add_to_ui_queue(text):
-    """Function to add updates to the UI queue and print them."""
+    """
+    Function to add updates to the UI queue and print them.
+
+    Adds messages to the global print_queue. This function can be
+    passed to other files to faciliate printing to the front end
+
+    Args:
+        text: The message to be added to the queue
+    """
     print_queue.put(text + "\n")
 
 
 async def sendJson(websocket, people_json):
+    """
+    Sends one final message to the front via a websocket and
+    closes the websocket
+
+    Args:
+        websocket (websockets.WebSocketClientProtocol): The WebSocket connection
+        to the front end
+        people_json: The message to be sent. Should be in json format.
+    """
     await websocket.send(people_json)
     await websocket.close()
 
 
 async def run_scraper_and_send_updates(websocket):
-    """Run the scraper and send progress updates."""
+    """
+    Run the scraper and sends progress updates to the frontend.
+
+    Calls the scraper function and sends the resulting updates to the
+    WebSocket. After completion, it adds a final "Finished" message to the queue.
+
+    Args:
+        websocket (websockets.WebSocketClientProtocol): The WebSocket connection
+        to the frontend used to communicate to the front end.
+    """
     await run_scraper(add_to_ui_queue, sendJson, websocket)
     add_to_ui_queue("Finished from websocket")
 
 
 async def handler(websocket):
-    """WebSocket connection handler."""
+    """
+    Handle WebSocket connection and manage scraping flow.
+
+    Receives the start message from the frontend, and if it's "start_scraping",
+    begins the scraping process asynchronously and sends updates back to the frontend.
+
+    Args:
+        websocket (websockets.WebSocketClientProtocol): The WebSocket connection
+        to the frontend used to send and receive messages from the front end.
+    """
     print("Connection Made")
 
     start_message = await websocket.recv()
@@ -61,7 +131,12 @@ async def handler(websocket):
 
 
 async def start_server():
-    """Start the WebSocket server."""
+    """
+    Start the WebSocket server to listen for connections and handle scraping.
+
+    Initializes the WebSocket server on port 50000 and continuously listens
+    for incoming connections from the frontend to manage the scraping process.
+    """
     server = await websockets.serve(handler, "0.0.0.0", 50000)
     print("WebSocket server running on ws://0.0.0.0:50000")
     await server.wait_closed()

@@ -1,3 +1,38 @@
+""" 
+Ohio House Representatives Scraper
+
+This script handles scraping the OhioHouse.gov website for information about the representatives.
+The list of rep names are split into batches of 15 that are then run concurrently. A batch is started
+every 60 seconds. Updates are sent to the front end throughout scraping.
+
+Functions:
+    async def fetch_data(session, url): Fetches HTML content for a given URL asynchronously.
+    async def get_info(session, rep_name, add_to_ui_queue, error_queue): Fetches representative 
+        information (hometown, address, phone, fax).
+    async def get_bio(session, rep_name, add_to_ui_queue, error_queue): Fetches representative biography 
+        details and process using AI.
+    async def get_committees(session, rep_name, add_to_ui_queue, error_queue): Fetches representative 
+        committee memberships.
+    async def process_rep(session, rep_name, add_to_ui_queue, result_queue, error_queue): Processes each 
+        representative's data concurrently.
+    async def process_batch(session, batch, add_to_ui_queue, result_queue, error_queue): Process a batch 
+        of representatives concurrently.
+    async def create_run_batches(rep_names, batch_size, add_to_ui_queue, result_queue, error_queue, session): 
+        Splits the representative list into batches and process each batch sequentially. 
+    async def run_scraper(add_to_ui_queue, sendJson, websocket): Main function to run the scraper and 
+        send the results to the frontend.
+    
+Libraries:
+    asyncio: handles async functions
+    aiohttp: handles async requests
+    BeautifulSoup: Helps format scraped pages
+    queue: Used for holding messages for frontend
+    os, load_dontenv:Uused for environment variables
+
+Author: Kent Howell [khowellmobile@gmail.com]
+Date: 2/18/2025
+"""
+
 import asyncio
 import aiohttp  # type: ignore
 from bs4 import BeautifulSoup  # type: ignore
@@ -24,6 +59,19 @@ client = genai.Client(api_key=API_KEY)
 
 # Asynchronous fetch for getting html content
 async def fetch_data(session, url):
+    """
+    Fetch HTML content for a given URL asynchronously.
+
+    Sends a GET request to the URL, checks the response status, and returns
+    the HTML content if successful. Returns None if the response is not valid.
+
+    Args:
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+        url (str): The URL to fetch data from.
+
+    Returns:
+        str: The HTML content of the page or None if the request fails.
+    """
     async with session.get(url) as response:
 
         if await checkURLResponse(response) != 0:
@@ -35,6 +83,21 @@ async def fetch_data(session, url):
 
 # Fetch representative information
 async def get_info(session, rep_name, add_to_ui_queue, error_queue):
+    """
+    Fetch representative information (hometown, address, phone, fax).
+
+    Scrapes the representative's page for personal details like hometown,
+    address, phone number, and fax number. Returns default values if not found.
+
+    Args:
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+        rep_name (str): The name of the representative whose details are being fetched.
+        add_to_ui_queue (function): A callback function to send updates to the frontend.
+        error_queue (queue.Queue): A queue to store names of representatives with errors.
+
+    Returns:
+        tuple: Hometown, address, phone number, and fax number of the representative.
+    """
     address_keywords = ["77", "High", "Street", "St.", "South", "S.", "Floor"]
     url = f"https://ohiohouse.gov/members/{rep_name}"
     response = await fetch_data(session, url)
@@ -68,6 +131,21 @@ async def get_info(session, rep_name, add_to_ui_queue, error_queue):
 
 # Fetch bio details
 async def get_bio(session, rep_name, add_to_ui_queue, error_queue):
+    """
+    Fetch representative biography details and process using AI.
+
+    Scrapes the representative's biography and uses AI to process and format it.
+    Returns error messages or the processed details if successful.
+
+    Args:
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+        rep_name (str): The name of the representative whose biography is being fetched.
+        add_to_ui_queue (function): A function to send updates to the frontend.
+        error_queue (queue.Queue): A queue to store names of representatives with errors.
+
+    Returns:
+        tuple: Biography-related details (education, politics, employment, community).
+    """
     url = f"https://ohiohouse.gov/members/{rep_name}/biography"
     response = await fetch_data(session, url)
 
@@ -118,6 +196,20 @@ async def get_bio(session, rep_name, add_to_ui_queue, error_queue):
 
 # Fetch committees information
 async def get_committees(session, rep_name, add_to_ui_queue, error_queue):
+    """
+    Fetch representative committee memberships.
+
+    Scrapes the representative's committees and returns a list of their names.
+
+    Args:
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+        rep_name (str): The name of the representative whose committee info is being fetched.
+        add_to_ui_queue (function): A function to send updates to the frontend.
+        error_queue (queue.Queue): A queue to store names of representatives with errors.
+
+    Returns:
+        str: A comma-separated list of committees the representative is a member of.
+    """
     url = f"https://ohiohouse.gov/members/{rep_name}/committees"
     response = await fetch_data(session, url)
 
@@ -137,6 +229,22 @@ async def get_committees(session, rep_name, add_to_ui_queue, error_queue):
 
 # Process each representative concurrently
 async def process_rep(session, rep_name, add_to_ui_queue, result_queue, error_queue):
+    """
+    Process each representative's data concurrently.
+
+    Collects information about a representative's details (bio, committees, contact info) and
+    formats them into a dictionary. Sends updates to the frontend as it processes.
+
+    Args:
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+        rep_name (str): The name of the representative to process.
+        add_to_ui_queue (function): A function to send updates to the frontend.
+        result_queue (queue.Queue): A queue to store results of the scraping.
+        error_queue (queue.Queue): A queue to store names of representatives with errors.
+
+    Returns:
+        None
+    """
     rep_obj = {}
 
     # Run all the async functions concurrently for each rep
@@ -166,12 +274,30 @@ async def process_rep(session, rep_name, add_to_ui_queue, result_queue, error_qu
 
 # Process a batch of representatives concurrently
 async def process_batch(session, batch, add_to_ui_queue, result_queue, error_queue):
+    """
+    Process a batch of representatives concurrently.
+
+    Processes a list of representatives by calling `process_rep` for each. Each
+    batch is processed in parallel, with a 3-second delay between each representative.
+
+    Args:
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+        batch (list): A list of representative names to process.
+        add_to_ui_queue (function): A function to send updates to the frontend.
+        result_queue (queue.Queue): A queue to store results of the scraping.
+        error_queue (queue.Queue): A queue to store names of representatives with errors.
+
+    Returns:
+        None
+    """
     tasks = []
     for rep_name in batch:
         task = asyncio.create_task(
             process_rep(session, rep_name, add_to_ui_queue, result_queue, error_queue)
         )
         tasks.append(task)
+
+        # Sleep to avoid resource exhaustion errors
         await asyncio.sleep(3)
 
     await asyncio.gather(*tasks)
@@ -180,6 +306,23 @@ async def process_batch(session, batch, add_to_ui_queue, result_queue, error_que
 async def create_run_batches(
     rep_names, batch_size, add_to_ui_queue, result_queue, error_queue, session
 ):
+    """
+    Split the representative list into batches and process each batch sequentially.
+
+    Divides the list of representatives into smaller batches and processes each
+    batch with a 60-second wait between starting to process each batch.
+
+    Args:
+        rep_names (list): List of representative names to process.
+        batch_size (int): The size of each batch of representatives.
+        add_to_ui_queue (function): A function to send updates to the frontend.
+        result_queue (queue.Queue): A queue to store results of the scraping.
+        error_queue (queue.Queue): A queue to store names of representatives with errors.
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+
+    Returns:
+        None
+    """
     total_batches = len(rep_names) // batch_size + (
         1 if len(rep_names) % batch_size else 0
     )
@@ -208,6 +351,20 @@ async def create_run_batches(
 
 # Main runner function (handling session and batches)
 async def run_scraper(add_to_ui_queue, sendJson, websocket):
+    """
+    Main function to run the scraper and send the results to the frontend.
+
+    Initializes the session, processes the batches of representatives,
+    formats the results, and sends the data to the frontend.
+
+    Args:
+        add_to_ui_queue (function): A function to send updates to the frontend.
+        sendJson (function): A function to send the final JSON to the frontend.
+        websocket (websockets.WebSocketClientProtocol): The WebSocket connection to the frontend.
+
+    Returns:
+        None
+    """
     rep_names = get_representative_list()
 
     async with aiohttp.ClientSession() as session:
