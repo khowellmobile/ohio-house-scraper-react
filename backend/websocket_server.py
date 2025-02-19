@@ -9,7 +9,7 @@ Functions:
     async def send_to_frontend(websocket): Sends messages to the front end from print_queue
     def add_to_ui_queue(text): Add messages to the print_queue (used as callback)
     async def sendJson(websocket, people_json): Sends final message to frontend and closes websocket
-    async def run_scraper_and_send_updates(websocket): Runs scraper and sends progress updates to the frontend.
+    async def run_scraper_handler(websocket): Runs scraper and sends progress updates to the frontend.
     async def handler(websocket): Handles WebSocket connection and manage scraping flow.
     async def start_server(): Starts the WebSocket server to listen for connections and handle scraping.
 
@@ -37,10 +37,32 @@ print_queue = queue.Queue()
 
 
 logging.basicConfig(
-    filename='websocket.log',
+    filename="websocket.log",
     level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
+
+
+async def receive_from_frontend(websocket):
+    while True:
+        try:
+            message = await websocket.recv()
+
+            print(message)
+
+            msg_json = json.loads(message)
+
+            if msg_json["msg_type"] == "command" and msg_json["msg"] == "start_scraper":
+                print("Starting scraper...")
+                asyncio.create_task(run_scraper_handler(websocket))
+                await send_to_frontend(websocket)
+
+        except websockets.exceptions.ConnectionClosed:
+            # If the connection is closed, stop listening for messages
+            print("WebSocket connection closed. Stopping message receiving.")
+            break
+
+        await asyncio.sleep(0.1)
 
 
 async def send_to_frontend(websocket):
@@ -101,7 +123,7 @@ async def sendJson(websocket, people_json):
     await websocket.close()
 
 
-async def run_scraper_and_send_updates(websocket):
+async def run_scraper_handler(websocket):
     """
     Run the scraper and sends progress updates to the frontend.
 
@@ -114,36 +136,36 @@ async def run_scraper_and_send_updates(websocket):
     """
     try:
         await run_scraper(add_to_ui_queue, sendJson, websocket)
-        add_to_ui_queue("Finished from websocket")
+        add_to_ui_queue('{"msg_type": "update", "msg": "Finished from websocket"}')
     except Exception as e:
-        # Log the error and notify the client if something goes wrong
+        # Log the error and notify the client if error occurs
         logging.error(f"Error occurred while running scraper: {e}")
-        add_to_ui_queue(f"Error occurred: {e}. This error has been logged.")
+        error_msg = json.dumps(f"Error occurred: {e}. This error has been logged.")
+        add_to_ui_queue(f'{{"msg_type": "error", "msg": {error_msg}}}')
 
 
 async def handler(websocket):
     """
     Handle WebSocket connection and manage scraping flow.
 
-    Receives the start message from the frontend, and if it's "start_scraping",
-    begins the scraping process asynchronously and sends updates back to the frontend.
+    Receives connection and starts receiving and sending of messages
+    to the frontend.
 
     Args:
         websocket (websockets.WebSocketClientProtocol): The WebSocket connection
         to the frontend used to send and receive messages from the front end.
     """
-    print("Connection Made")
 
     client_ip = websocket.remote_address[0]
-    logging.info(f'Connection made from IP: {client_ip}')
 
-    start_message = await websocket.recv()
-    print(f"Received from frontend: {start_message}")
+    print("Connection Made to: ", client_ip)
 
-    if start_message == "start_scraping":
-        print("Starting scraper...")
-        asyncio.create_task(run_scraper_and_send_updates(websocket))
-        await send_to_frontend(websocket)
+    logging.info(f"Connection made from IP: {client_ip}")
+
+    receive_task = asyncio.create_task(receive_from_frontend(websocket))
+    send_task = asyncio.create_task(send_to_frontend(websocket))
+
+    await asyncio.gather(receive_task, send_task)
 
 
 async def start_server():
@@ -153,7 +175,7 @@ async def start_server():
     Initializes the WebSocket server on port 50000 and continuously listens
     for incoming connections from the frontend to manage the scraping process.
     """
-    server = await websockets.serve(handler, "0.0.0.0", 50000)
+    server = await websockets.serve(handler, "localhost", 65432)
     print("WebSocket server running on ws://0.0.0.0:50000")
     await server.wait_closed()
 

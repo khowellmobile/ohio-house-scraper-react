@@ -48,7 +48,7 @@ def get_representative_list():
 
     rep_name_divs = soup.find_all("div", class_="media-overlay-caption-text-line-1")
 
-    for div in rep_name_divs:
+    for div in rep_name_divs[:30]:
         # Use re.sub in future
         rep_names.append(
             div.text.strip().replace(" ", "-").replace(".", "").replace(",", "").lower()
@@ -186,3 +186,17 @@ def create_json_list(people_dict):
     people_json = re.sub(r"[\r\n\u2028\u2029]+", " ", people_json)
 
     return people_json
+
+
+def create_formatted_json_msg(kind, rep_name):
+    json_str = ""
+    if kind == "start_rep":
+        json_str = '{"msg_type":"update", "msg":"Processing: {rep_name}"}'
+    elif kind == "finish_rep":
+        json_str = '{"msg_type":"update", "msg":"Finished Processing: {rep_name}"}'
+    elif kind == "res_error":
+        json_str = '{"msg_type":"error", "msg":"Error: Response Error. Adding {rep_name} to error queue"}'
+    elif kind == "ai_error":
+        json_str = '{"msg_type":"error", "msg":"Error: AI Format Error. Adding {rep_name} to error queue"}'
+
+    return json_str.format(rep_name=rep_name)

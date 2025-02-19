@@ -11,12 +11,18 @@ const Body = () => {
 
     const scrollRef = useRef(null);
 
-    const handleScrapingStart = () => {
-        const socket = new WebSocket("ws://18.222.113.56:50000");
+    const handleScraper = () => {
+        const socket = new WebSocket("ws://localhost:65432");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");
-            socket.send("start_scraping");
+
+            const message = {
+                msg_type: 'command',
+                msg: 'start_scraper'
+            }
+
+            socket.send(JSON.stringify(message));
             setIsScraping(true);
         };
 
@@ -118,7 +124,7 @@ const Body = () => {
 
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
-                    <button onClick={handleScrapingStart} disabled={isScraping}>
+                    <button onClick={handleScraper} disabled={isScraping}>
                         <p>Run Scraper</p>
                     </button>
                     <button onClick={() => convertJsonToCSV(csvJson)} disabled={isScraping}>

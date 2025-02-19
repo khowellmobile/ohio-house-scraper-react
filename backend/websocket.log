@@ -1,0 +1,296 @@
+2025-02-19 08:29:05,214 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:29:05,217 - INFO - server listening on 0.0.0.0:50000
+2025-02-19 08:29:35,195 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:29:35,198 - INFO - server listening on 0.0.0.0:50000
+2025-02-19 08:30:53,523 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:30:53,525 - INFO - server listening on 0.0.0.0:50000
+2025-02-19 08:33:32,648 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:33:32,651 - INFO - server listening on 0.0.0.0:50000
+2025-02-19 08:33:47,509 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:34:02,240 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:34:02,245 - INFO - server listening on 127.0.0.1:65432
+2025-02-19 08:34:02,245 - INFO - server listening on [::1]:65432
+2025-02-19 08:34:04,657 - DEBUG - = connection is CONNECTING
+2025-02-19 08:34:04,664 - DEBUG - < GET / HTTP/1.1
+2025-02-19 08:34:04,664 - DEBUG - < Host: localhost:65432
+2025-02-19 08:34:04,664 - DEBUG - < Connection: Upgrade
+2025-02-19 08:34:04,664 - DEBUG - < Pragma: no-cache
+2025-02-19 08:34:04,664 - DEBUG - < Cache-Control: no-cache
+2025-02-19 08:34:04,664 - DEBUG - < User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+2025-02-19 08:34:04,664 - DEBUG - < Upgrade: websocket
+2025-02-19 08:34:04,664 - DEBUG - < Origin: http://localhost:3000
+2025-02-19 08:34:04,664 - DEBUG - < Sec-WebSocket-Version: 13
+2025-02-19 08:34:04,664 - DEBUG - < Accept-Encoding: gzip, deflate, br, zstd
+2025-02-19 08:34:04,664 - DEBUG - < Accept-Language: en-US,en;q=0.9
+2025-02-19 08:34:04,664 - DEBUG - < Sec-WebSocket-Key: m0DyUvOHjEDW7tlWnC+dqw==
+2025-02-19 08:34:04,664 - DEBUG - < Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+2025-02-19 08:34:04,668 - DEBUG - > HTTP/1.1 101 Switching Protocols
+2025-02-19 08:34:04,668 - DEBUG - > Date: Wed, 19 Feb 2025 13:34:04 GMT
+2025-02-19 08:34:04,668 - DEBUG - > Upgrade: websocket
+2025-02-19 08:34:04,668 - DEBUG - > Connection: Upgrade
+2025-02-19 08:34:04,668 - DEBUG - > Sec-WebSocket-Accept: +ZFGAmMhJ/1wNynSMatco5XQz40=
+2025-02-19 08:34:04,668 - DEBUG - > Sec-WebSocket-Extensions: permessage-deflate; server_max_window_bits=12; client_max_window_bits=12
+2025-02-19 08:34:04,668 - DEBUG - > Server: Python/3.12 websockets/14.2
+2025-02-19 08:34:04,668 - DEBUG - = connection is OPEN
+2025-02-19 08:34:04,668 - INFO - connection open
+2025-02-19 08:34:04,668 - INFO - Connection made from IP: ::1
+2025-02-19 08:34:04,670 - DEBUG - < TEXT '{"msg_type":"command","msg":"start_scraper"}' [44 bytes]
+2025-02-19 08:34:04,671 - ERROR - Error occurred while running scraper: run_scraper() takes 1 positional argument but 3 were given
+2025-02-19 08:34:04,783 - DEBUG - > TEXT 'Error occurred: run_scraper() takes 1 positiona...rror has been logged.\n' [104 bytes]
+2025-02-19 08:34:24,685 - DEBUG - % sending keepalive ping
+2025-02-19 08:34:24,685 - DEBUG - > PING a4 55 a5 e5 [binary, 4 bytes]
+2025-02-19 08:34:24,685 - DEBUG - < PONG a4 55 a5 e5 [binary, 4 bytes]
+2025-02-19 08:34:24,686 - DEBUG - % received keepalive pong
+2025-02-19 08:34:44,691 - DEBUG - % sending keepalive ping
+2025-02-19 08:34:44,691 - DEBUG - > PING 08 ab c8 6c [binary, 4 bytes]
+2025-02-19 08:34:44,691 - DEBUG - < PONG 08 ab c8 6c [binary, 4 bytes]
+2025-02-19 08:34:44,691 - DEBUG - % received keepalive pong
+2025-02-19 08:35:04,715 - DEBUG - % sending keepalive ping
+2025-02-19 08:35:04,715 - DEBUG - > PING 63 4a 71 c5 [binary, 4 bytes]
+2025-02-19 08:35:04,716 - DEBUG - < PONG 63 4a 71 c5 [binary, 4 bytes]
+2025-02-19 08:35:04,716 - DEBUG - % received keepalive pong
+2025-02-19 08:35:24,724 - DEBUG - % sending keepalive ping
+2025-02-19 08:35:24,725 - DEBUG - > PING 7e 9c ac 83 [binary, 4 bytes]
+2025-02-19 08:35:24,726 - DEBUG - < PONG 7e 9c ac 83 [binary, 4 bytes]
+2025-02-19 08:35:24,726 - DEBUG - % received keepalive pong
+2025-02-19 08:35:44,720 - DEBUG - % sending keepalive ping
+2025-02-19 08:35:44,720 - DEBUG - > PING 13 f8 93 28 [binary, 4 bytes]
+2025-02-19 08:35:44,722 - DEBUG - < PONG 13 f8 93 28 [binary, 4 bytes]
+2025-02-19 08:35:44,722 - DEBUG - % received keepalive pong
+2025-02-19 08:36:04,705 - DEBUG - % sending keepalive ping
+2025-02-19 08:36:04,705 - DEBUG - > PING 'k9>k' [text, 4 bytes]
+2025-02-19 08:36:04,705 - DEBUG - < PONG 'k9>k' [text, 4 bytes]
+2025-02-19 08:36:04,705 - DEBUG - % received keepalive pong
+2025-02-19 08:36:25,265 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:36:25,271 - INFO - server listening on 127.0.0.1:65432
+2025-02-19 08:36:25,271 - INFO - server listening on [::1]:65432
+2025-02-19 08:36:28,153 - DEBUG - = connection is CONNECTING
+2025-02-19 08:36:28,154 - DEBUG - < GET / HTTP/1.1
+2025-02-19 08:36:28,154 - DEBUG - < Host: localhost:65432
+2025-02-19 08:36:28,154 - DEBUG - < Connection: Upgrade
+2025-02-19 08:36:28,154 - DEBUG - < Pragma: no-cache
+2025-02-19 08:36:28,154 - DEBUG - < Cache-Control: no-cache
+2025-02-19 08:36:28,155 - DEBUG - < User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+2025-02-19 08:36:28,155 - DEBUG - < Upgrade: websocket
+2025-02-19 08:36:28,155 - DEBUG - < Origin: http://localhost:3000
+2025-02-19 08:36:28,155 - DEBUG - < Sec-WebSocket-Version: 13
+2025-02-19 08:36:28,155 - DEBUG - < Accept-Encoding: gzip, deflate, br, zstd
+2025-02-19 08:36:28,155 - DEBUG - < Accept-Language: en-US,en;q=0.9
+2025-02-19 08:36:28,155 - DEBUG - < Sec-WebSocket-Key: eugVnAT3kDQZObSeVcbenQ==
+2025-02-19 08:36:28,155 - DEBUG - < Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+2025-02-19 08:36:28,155 - DEBUG - > HTTP/1.1 101 Switching Protocols
+2025-02-19 08:36:28,155 - DEBUG - > Date: Wed, 19 Feb 2025 13:36:28 GMT
+2025-02-19 08:36:28,155 - DEBUG - > Upgrade: websocket
+2025-02-19 08:36:28,155 - DEBUG - > Connection: Upgrade
+2025-02-19 08:36:28,155 - DEBUG - > Sec-WebSocket-Accept: YZir+fngideiFM2K2IoQg6VvIbo=
+2025-02-19 08:36:28,155 - DEBUG - > Sec-WebSocket-Extensions: permessage-deflate; server_max_window_bits=12; client_max_window_bits=12
+2025-02-19 08:36:28,155 - DEBUG - > Server: Python/3.12 websockets/14.2
+2025-02-19 08:36:28,155 - DEBUG - = connection is OPEN
+2025-02-19 08:36:28,155 - INFO - connection open
+2025-02-19 08:36:28,156 - INFO - Connection made from IP: ::1
+2025-02-19 08:36:28,156 - ERROR - connection handler failed
+Traceback (most recent call last):
+  File "C:\Users\Staff2\Desktop\Coding Projects\ohio-house-scraper-react\backend\myenv\Lib\site-packages\websockets\asyncio\server.py", line 374, in conn_handler
+    await self.handler(connection)
+  File "C:\Users\Staff2\Desktop\Coding Projects\ohio-house-scraper-react\backend\websocket_server.py", line 167, in handler
+    await asyncio.gather(send_task, receive_task)
+  File "C:\Users\Staff2\Desktop\Coding Projects\ohio-house-scraper-react\backend\websocket_server.py", line 49, in receive_from_frontend
+    message = await websocket.recv()
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Staff2\Desktop\Coding Projects\ohio-house-scraper-react\backend\myenv\Lib\site-packages\websockets\asyncio\connection.py", line 299, in recv
+    raise ConcurrencyError(
+websockets.exceptions.ConcurrencyError: cannot call recv while another coroutine is already running recv or recv_streaming
+2025-02-19 08:36:28,180 - DEBUG - > CLOSE 1011 (internal error) [2 bytes]
+2025-02-19 08:36:28,181 - DEBUG - = connection is CLOSING
+2025-02-19 08:36:28,181 - DEBUG - < TEXT '{"msg_type":"command","msg":"start_scraper"}' [44 bytes]
+2025-02-19 08:36:28,181 - DEBUG - < CLOSE 1011 (internal error) [2 bytes]
+2025-02-19 08:36:28,181 - DEBUG - > EOF
+2025-02-19 08:36:28,181 - DEBUG - x half-closing TCP connection
+2025-02-19 08:36:28,184 - DEBUG - Starting new HTTPS connection (1): ohiohouse.gov:443
+2025-02-19 08:36:28,517 - DEBUG - https://ohiohouse.gov:443 "GET /members/directory?start=1&sort=LastName HTTP/1.1" 200 None
+2025-02-19 08:36:28,566 - DEBUG - < EOF
+2025-02-19 08:36:28,566 - DEBUG - = connection is CLOSED
+2025-02-19 08:36:28,833 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:28,863 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:29,596 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:29,597 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:31,673 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:31,689 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:32,607 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:32,608 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:34,693 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:34,723 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:35,585 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:35,587 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:37,707 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:37,709 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:38,476 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:38,477 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:40,728 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:40,755 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:41,570 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:41,571 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:43,770 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:43,773 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:44,981 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:44,982 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:46,716 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:46,731 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:47,319 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:47,320 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:49,735 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:49,750 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:50,431 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:50,432 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:52,826 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:52,827 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:53,393 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:53,393 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:55,756 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:55,772 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:56,481 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:56,482 - INFO - AFC remote call 1 is done.
+2025-02-19 08:36:58,762 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:36:58,777 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:36:59,431 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:36:59,432 - INFO - AFC remote call 1 is done.
+2025-02-19 08:37:01,790 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:37:01,803 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:37:02,438 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:37:02,439 - INFO - AFC remote call 1 is done.
+2025-02-19 08:37:04,775 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:37:04,776 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:37:05,602 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:37:05,603 - INFO - AFC remote call 1 is done.
+2025-02-19 08:37:07,803 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:37:07,816 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:37:08,606 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:37:08,607 - INFO - AFC remote call 1 is done.
+2025-02-19 08:37:10,843 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:37:10,882 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:37:11,573 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:37:11,574 - INFO - AFC remote call 1 is done.
+2025-02-19 08:37:16,129 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:37:16,136 - INFO - server listening on [::1]:65432
+2025-02-19 08:37:16,136 - INFO - server listening on 127.0.0.1:65432
+2025-02-19 08:37:18,040 - DEBUG - = connection is CONNECTING
+2025-02-19 08:37:18,040 - DEBUG - < GET / HTTP/1.1
+2025-02-19 08:37:18,040 - DEBUG - < Host: localhost:65432
+2025-02-19 08:37:18,040 - DEBUG - < Connection: Upgrade
+2025-02-19 08:37:18,040 - DEBUG - < Pragma: no-cache
+2025-02-19 08:37:18,040 - DEBUG - < Cache-Control: no-cache
+2025-02-19 08:37:18,040 - DEBUG - < User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+2025-02-19 08:37:18,040 - DEBUG - < Upgrade: websocket
+2025-02-19 08:37:18,040 - DEBUG - < Origin: http://localhost:3000
+2025-02-19 08:37:18,040 - DEBUG - < Sec-WebSocket-Version: 13
+2025-02-19 08:37:18,040 - DEBUG - < Accept-Encoding: gzip, deflate, br, zstd
+2025-02-19 08:37:18,041 - DEBUG - < Accept-Language: en-US,en;q=0.9
+2025-02-19 08:37:18,041 - DEBUG - < Sec-WebSocket-Key: /mUAhwrcyfY6CrEWN0kCjA==
+2025-02-19 08:37:18,041 - DEBUG - < Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+2025-02-19 08:37:18,041 - DEBUG - > HTTP/1.1 101 Switching Protocols
+2025-02-19 08:37:18,041 - DEBUG - > Date: Wed, 19 Feb 2025 13:37:18 GMT
+2025-02-19 08:37:18,041 - DEBUG - > Upgrade: websocket
+2025-02-19 08:37:18,041 - DEBUG - > Connection: Upgrade
+2025-02-19 08:37:18,041 - DEBUG - > Sec-WebSocket-Accept: t+e98gH4hewCMBY0uFfCFClByRI=
+2025-02-19 08:37:18,041 - DEBUG - > Sec-WebSocket-Extensions: permessage-deflate; server_max_window_bits=12; client_max_window_bits=12
+2025-02-19 08:37:18,041 - DEBUG - > Server: Python/3.12 websockets/14.2
+2025-02-19 08:37:18,041 - DEBUG - = connection is OPEN
+2025-02-19 08:37:18,041 - INFO - connection open
+2025-02-19 08:37:18,042 - INFO - Connection made from IP: ::1
+2025-02-19 08:37:18,042 - ERROR - connection handler failed
+Traceback (most recent call last):
+  File "C:\Users\Staff2\Desktop\Coding Projects\ohio-house-scraper-react\backend\myenv\Lib\site-packages\websockets\asyncio\server.py", line 374, in conn_handler
+    await self.handler(connection)
+  File "C:\Users\Staff2\Desktop\Coding Projects\ohio-house-scraper-react\backend\websocket_server.py", line 167, in handler
+    await asyncio.gather(send_task, receive_task)
+  File "C:\Users\Staff2\Desktop\Coding Projects\ohio-house-scraper-react\backend\websocket_server.py", line 49, in receive_from_frontend
+    message = await websocket.recv()
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Staff2\Desktop\Coding Projects\ohio-house-scraper-react\backend\myenv\Lib\site-packages\websockets\asyncio\connection.py", line 299, in recv
+    raise ConcurrencyError(
+websockets.exceptions.ConcurrencyError: cannot call recv while another coroutine is already running recv or recv_streaming
+2025-02-19 08:37:18,059 - DEBUG - > CLOSE 1011 (internal error) [2 bytes]
+2025-02-19 08:37:18,060 - DEBUG - = connection is CLOSING
+2025-02-19 08:37:18,060 - DEBUG - < TEXT '{"msg_type":"command","msg":"start_scraper"}' [44 bytes]
+2025-02-19 08:37:18,060 - DEBUG - < CLOSE 1011 (internal error) [2 bytes]
+2025-02-19 08:37:18,060 - DEBUG - > EOF
+2025-02-19 08:37:18,060 - DEBUG - x half-closing TCP connection
+2025-02-19 08:37:18,062 - DEBUG - Starting new HTTPS connection (1): ohiohouse.gov:443
+2025-02-19 08:37:18,248 - DEBUG - https://ohiohouse.gov:443 "GET /members/directory?start=1&sort=LastName HTTP/1.1" 200 None
+2025-02-19 08:37:18,294 - DEBUG - < EOF
+2025-02-19 08:37:18,294 - DEBUG - = connection is CLOSED
+2025-02-19 08:37:18,526 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:37:18,553 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:37:19,127 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:37:19,127 - INFO - AFC remote call 1 is done.
+2025-02-19 08:37:21,415 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:37:21,416 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:37:21,547 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 429 None
+2025-02-19 08:37:24,416 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:37:24,443 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:37:24,624 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 429 None
+2025-02-19 08:37:27,458 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:37:27,460 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:37:27,627 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 429 None
+2025-02-19 08:38:42,829 - DEBUG - Using proactor: IocpProactor
+2025-02-19 08:38:42,835 - INFO - server listening on 127.0.0.1:65432
+2025-02-19 08:38:42,835 - INFO - server listening on [::1]:65432
+2025-02-19 08:38:45,224 - DEBUG - = connection is CONNECTING
+2025-02-19 08:38:45,224 - DEBUG - < GET / HTTP/1.1
+2025-02-19 08:38:45,225 - DEBUG - < Host: localhost:65432
+2025-02-19 08:38:45,225 - DEBUG - < Connection: Upgrade
+2025-02-19 08:38:45,225 - DEBUG - < Pragma: no-cache
+2025-02-19 08:38:45,225 - DEBUG - < Cache-Control: no-cache
+2025-02-19 08:38:45,225 - DEBUG - < User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+2025-02-19 08:38:45,225 - DEBUG - < Upgrade: websocket
+2025-02-19 08:38:45,225 - DEBUG - < Origin: http://localhost:3000
+2025-02-19 08:38:45,225 - DEBUG - < Sec-WebSocket-Version: 13
+2025-02-19 08:38:45,225 - DEBUG - < Accept-Encoding: gzip, deflate, br, zstd
+2025-02-19 08:38:45,225 - DEBUG - < Accept-Language: en-US,en;q=0.9
+2025-02-19 08:38:45,225 - DEBUG - < Sec-WebSocket-Key: B5xcVA4hp6lFNBSLfoxapA==
+2025-02-19 08:38:45,225 - DEBUG - < Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+2025-02-19 08:38:45,225 - DEBUG - > HTTP/1.1 101 Switching Protocols
+2025-02-19 08:38:45,225 - DEBUG - > Date: Wed, 19 Feb 2025 13:38:45 GMT
+2025-02-19 08:38:45,225 - DEBUG - > Upgrade: websocket
+2025-02-19 08:38:45,226 - DEBUG - > Connection: Upgrade
+2025-02-19 08:38:45,226 - DEBUG - > Sec-WebSocket-Accept: MUI4SWpWFhNUggNaMGQA2F53HBI=
+2025-02-19 08:38:45,226 - DEBUG - > Sec-WebSocket-Extensions: permessage-deflate; server_max_window_bits=12; client_max_window_bits=12
+2025-02-19 08:38:45,226 - DEBUG - > Server: Python/3.12 websockets/14.2
+2025-02-19 08:38:45,226 - DEBUG - = connection is OPEN
+2025-02-19 08:38:45,226 - INFO - connection open
+2025-02-19 08:38:45,226 - INFO - Connection made from IP: ::1
+2025-02-19 08:38:45,227 - DEBUG - < TEXT '{"msg_type":"command","msg":"start_scraper"}' [44 bytes]
+2025-02-19 08:38:45,228 - DEBUG - Starting new HTTPS connection (1): ohiohouse.gov:443
+2025-02-19 08:38:45,501 - DEBUG - https://ohiohouse.gov:443 "GET /members/directory?start=1&sort=LastName HTTP/1.1" 200 None
+2025-02-19 08:38:45,549 - DEBUG - > TEXT 'Starting batch 1/2...\n' [22 bytes]
+2025-02-19 08:38:45,550 - DEBUG - > TEXT 'Waiting 60 seconds to launch next batch...\n' [43 bytes]
+2025-02-19 08:38:45,666 - DEBUG - > TEXT 'Processing: munira-abdullahi\n' [29 bytes]
+2025-02-19 08:38:45,799 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:38:45,827 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:38:46,538 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:38:46,539 - INFO - AFC remote call 1 is done.
+2025-02-19 08:38:46,653 - DEBUG - > TEXT 'Finished Processing: munira-abdullahi\n' [38 bytes]
+2025-02-19 08:38:48,636 - DEBUG - > TEXT 'Processing: cindy-abrams\n' [25 bytes]
+2025-02-19 08:38:48,695 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:38:48,728 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:38:49,740 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:38:49,741 - INFO - AFC remote call 1 is done.
+2025-02-19 08:38:49,837 - DEBUG - > TEXT 'Finished Processing: cindy-abrams\n' [34 bytes]
+2025-02-19 08:38:51,678 - DEBUG - > TEXT 'Processing: rachel-b-baker\n' [27 bytes]
+2025-02-19 08:38:51,718 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:38:51,724 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:38:52,365 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:38:52,367 - INFO - AFC remote call 1 is done.
+2025-02-19 08:38:52,442 - DEBUG - > TEXT 'Finished Processing: rachel-b-baker\n' [36 bytes]
+2025-02-19 08:38:54,637 - DEBUG - > TEXT 'Processing: tim-barhorst\n' [25 bytes]
+2025-02-19 08:38:54,743 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:38:54,745 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:38:55,353 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:38:55,355 - INFO - AFC remote call 1 is done.
+2025-02-19 08:38:55,397 - DEBUG - > TEXT 'Finished Processing: tim-barhorst\n' [34 bytes]
+2025-02-19 08:38:57,701 - DEBUG - > TEXT 'Processing: adam-c-bird\n' [24 bytes]
+2025-02-19 08:38:57,731 - INFO - AFC is enabled with max remote calls: 10.
+2025-02-19 08:38:57,743 - DEBUG - Starting new HTTPS connection (1): generativelanguage.googleapis.com:443
+2025-02-19 08:38:58,478 - DEBUG - https://generativelanguage.googleapis.com:443 "POST /v1beta/models/gemini-1.5-flash:generateContent HTTP/1.1" 200 None
+2025-02-19 08:38:58,480 - INFO - AFC remote call 1 is done.
+2025-02-19 08:38:58,572 - DEBUG - > TEXT 'Finished Processing: adam-c-bird\n' [33 bytes]

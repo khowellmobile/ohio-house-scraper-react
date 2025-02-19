@@ -44,7 +44,7 @@ from dotenv import load_dotenv  # type: ignore
 from utils import (
     get_representative_list,
     get_ai_prompt,
-    getTime,
+    create_formatted_json_msg,
     checkURLResponse,
     create_json_list,
 )
@@ -103,7 +103,7 @@ async def get_info(session, rep_name, add_to_ui_queue, error_queue):
     response = await fetch_data(session, url)
 
     if not response:
-        add_to_ui_queue(f"Error: Response Error. Adding {rep_name} to error queue")
+        add_to_ui_queue(create_formatted_json_msg("res_error", rep_name))
         error_queue.put(rep_name)
         return "Response Error", "Response Error", "Response Error", "Response Error"
 
@@ -150,7 +150,7 @@ async def get_bio(session, rep_name, add_to_ui_queue, error_queue):
     response = await fetch_data(session, url)
 
     if not response:
-        add_to_ui_queue(f"Error: Response Error. Adding {rep_name} to error queue")
+        add_to_ui_queue(create_formatted_json_msg("res_error", rep_name))
         error_queue.put(rep_name)
         return "Response Error", "Response Error", "Response Error", "Response Error"
 
@@ -174,18 +174,14 @@ async def get_bio(session, rep_name, add_to_ui_queue, error_queue):
                 )
             except Exception as e:
                 print(f"Gemini Response Error: {e}")
-                add_to_ui_queue(
-                    f"Gemini Response Error: Adding '{rep_name}' to error queue"
-                )
+                add_to_ui_queue(create_formatted_json_msg("ai_error", rep_name))
                 error_queue.put(rep_name)
                 return "AI Error", "AI Error", "AI Error", "AI Error"
 
             values = response.text.split("|")
 
             if len(values) < 4:
-                add_to_ui_queue(
-                    f"Gemini Formatting Error. Adding '{rep_name}' to error queue"
-                )
+                add_to_ui_queue(create_formatted_json_msg("ai_error", rep_name))
                 error_queue.put(rep_name)
                 return "AI Error", "AI Error", "AI Error", "AI Error"
 
@@ -214,7 +210,7 @@ async def get_committees(session, rep_name, add_to_ui_queue, error_queue):
     response = await fetch_data(session, url)
 
     if not response:
-        add_to_ui_queue(f"Error: Response Error. Adding {rep_name} to error queue")
+        add_to_ui_queue(create_formatted_json_msg("res_error", rep_name))
         error_queue.put(rep_name)
         return "Response Error", "Response Error", "Response Error", "Response Error"
 
@@ -253,9 +249,9 @@ async def process_rep(session, rep_name, add_to_ui_queue, result_queue, error_qu
         get_bio(session, rep_name, add_to_ui_queue, error_queue),
         get_committees(session, rep_name, add_to_ui_queue, error_queue),
     ]
-    add_to_ui_queue(f"Processing: {rep_name}")
+    add_to_ui_queue(create_formatted_json_msg("start_rep", rep_name))
     results = await asyncio.gather(*tasks)
-    add_to_ui_queue(f"Finished Processing: {rep_name}")
+    add_to_ui_queue(create_formatted_json_msg("finish_rep", rep_name))
 
     # Assign results to rep_obj
     rep_obj["hometown"], rep_obj["address"], rep_obj["phone"], rep_obj["fax"] = results[
@@ -332,7 +328,9 @@ async def create_run_batches(
     for i in range(total_batches):
         batch = rep_names[i * batch_size : (i + 1) * batch_size]
 
-        add_to_ui_queue(f"Starting batch {i + 1}/{total_batches}...")
+        add_to_ui_queue(
+            f'{{"msg_type": "update", "msg": "Starting batch {i + 1}/{total_batches}..."}}'
+        )
 
         # Start the batch processing in a new task
         task = asyncio.create_task(
@@ -342,7 +340,9 @@ async def create_run_batches(
 
         # Wait 60 seconds before launching the next batch
         if i < total_batches - 1:
-            add_to_ui_queue(f"Waiting 60 seconds to launch next batch...")
+            add_to_ui_queue(
+                '{"msg_type": "update", "msg": "Waiting 60 seconds to launch next batch..."}'
+            )
             await asyncio.sleep(60)
 
     # Wait for all tasks to finish
@@ -380,7 +380,9 @@ async def run_scraper(add_to_ui_queue, sendJson, websocket):
             people.update(result_queue.get())
 
         if not error_queue.empty():
-            add_to_ui_queue("Starting to process response and format errors...")
+            add_to_ui_queue(
+                '{"msg_type": "update", "msg": "Starting to process errors..."}'
+            )
 
         while not error_queue.empty():
             await process_rep(
