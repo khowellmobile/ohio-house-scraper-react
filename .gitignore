@@ -1,5 +1,4 @@
 frontend/node_modules
 backend/myenv
 backend/.env
-
-backend/websocket.log
+websocket.log
