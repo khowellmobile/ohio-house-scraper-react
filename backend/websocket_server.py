@@ -48,8 +48,6 @@ async def receive_from_frontend(websocket):
         try:
             message = await websocket.recv()
 
-            print(message)
-
             msg_json = json.loads(message)
 
             if msg_json["msg_type"] == "command" and msg_json["msg"] == "start_scraper":

@@ -189,14 +189,12 @@ def create_json_list(people_dict):
 
 
 def create_formatted_json_msg(kind, rep_name):
-    json_str = ""
     if kind == "start_rep":
-        json_str = '{"msg_type":"update", "msg":"Processing: {rep_name}"}'
+        return f'{{"msg_type":"update", "msg":"Processing: {rep_name}"}}'
     elif kind == "finish_rep":
-        json_str = '{"msg_type":"update", "msg":"Finished Processing: {rep_name}"}'
+        return f'{{"msg_type":"update", "msg":"Finished Processing: {rep_name}"}}'
     elif kind == "res_error":
-        json_str = '{"msg_type":"error", "msg":"Error: Response Error. Adding {rep_name} to error queue"}'
+        return f'{{"msg_type":"error", "msg":"Error: Response Error. Adding {rep_name} to error queue"}}'
     elif kind == "ai_error":
-        json_str = '{"msg_type":"error", "msg":"Error: AI Format Error. Adding {rep_name} to error queue"}'
+        return f'{{"msg_type":"error", "msg":"Error: AI Format Error. Adding {rep_name} to error queue"}}'
 
-    return json_str.format(rep_name=rep_name)

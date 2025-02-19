@@ -18,9 +18,9 @@ const Body = () => {
             console.log("Connected to WebSocket server");
 
             const message = {
-                msg_type: 'command',
-                msg: 'start_scraper'
-            }
+                msg_type: "command",
+                msg: "start_scraper",
+            };
 
             socket.send(JSON.stringify(message));
             setIsScraping(true);
@@ -32,9 +32,18 @@ const Body = () => {
             /* Checking is message json */
             try {
                 message = JSON.parse(event.data);
-                setCsvJson(message);
+
+                if ("msg_type" in message) {
+                    if (message["msg_type"] == "update") {
+                        setMessages((prevMessages) => [...prevMessages, message["msg"]]);
+                    } else if (message["msg_type"] == "error") {
+                        setMessages((prevMessages) => [...prevMessages, message["msg"]]);
+                    }
+                } else {
+                    setCsvJson(message);
+                }
             } catch (e) {
-                message = event.data;
+                message = "Not Json format. Printing plain message: " + event.data;
                 setMessages((prevMessages) => [...prevMessages, message]);
             }
         };
