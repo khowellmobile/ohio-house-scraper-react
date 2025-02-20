@@ -29,7 +29,7 @@ import json
 import queue
 import logging
 
-from houseScraper_async import run_scraper
+from houseScraper_async_full import run_scraper
 
 
 # This will hold the text updates for the frontend.
