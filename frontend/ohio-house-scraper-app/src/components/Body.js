@@ -6,12 +6,23 @@ const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
     const [csvJson, setCsvJson] = useState();
+    const [isFullRun, setIsFullRun] = useState(true);
 
     const [isModalOpen, setIsModalOpen] = useState(true);
 
     const scrollRef = useRef(null);
 
-    const handleScraper = () => {
+    const handleScraperCommand = (isFull) => {
+        if (isFull) {
+            handleScraper("start_full_scraper");
+            setIsFullRun(true);
+        } else {
+            handleScraper("start_partial_scraper");
+            setIsFullRun(false);
+        }
+    };
+
+    const handleScraper = (initial_command) => {
         const socket = new WebSocket("ws://localhost:65432");
 
         socket.onopen = () => {
@@ -19,7 +30,7 @@ const Body = () => {
 
             const message = {
                 msg_type: "command",
-                msg: "start_scraper",
+                msg: initial_command,
             };
 
             socket.send(JSON.stringify(message));
@@ -34,9 +45,9 @@ const Body = () => {
                 message = JSON.parse(event.data);
 
                 if ("msg_type" in message) {
-                    if (message["msg_type"] == "update") {
+                    if (message["msg_type"] === "update") {
                         setMessages((prevMessages) => [...prevMessages, message["msg"]]);
-                    } else if (message["msg_type"] == "error") {
+                    } else if (message["msg_type"] === "error") {
                         setMessages((prevMessages) => [...prevMessages, message["msg"]]);
                     }
                 } else {
@@ -50,11 +61,12 @@ const Body = () => {
 
         socket.onerror = (error) => {
             console.error("WebSocket error:", error);
+            setMessages((prevMessages) => [...prevMessages, "WebSocket could not connect"]);
         };
 
         socket.onclose = () => {
             console.log("Disconnected from WebSocket server");
-            setMessages((prevMessages) => [...prevMessages, "Scraper Finished"]);
+            setMessages((prevMessages) => [...prevMessages, "Closing WebSocket"]);
             setIsScraping(false);
         };
 
@@ -75,36 +87,48 @@ const Body = () => {
     }, [csvJson]);
 
     const convertJsonToCSV = (csvJson) => {
-        const headers = [
-            "Name",
-            "Hometown",
-            "Address",
-            "Phone",
-            "Fax",
-            "Education",
-            "Politics",
-            "Employment",
-            "Community",
-            "Committees",
-        ];
+        let headers;
+
+        if (isFullRun) {
+            headers = [
+                "Name",
+                "Hometown",
+                "Address",
+                "Phone",
+                "Fax",
+                "Education",
+                "Politics",
+                "Employment",
+                "Community",
+                "Committees",
+            ];
+        } else {
+            headers = ["Name", "Legislation", "Image", "Image_URL"];
+        }
 
         let csvContent = headers.join("\t") + "\n";
 
         for (const key in csvJson) {
             if (csvJson.hasOwnProperty(key)) {
                 const person = csvJson[key];
-                const row = [
-                    key,
-                    person.hometown,
-                    person.address,
-                    person.phone,
-                    person.fax,
-                    person.education,
-                    person.politics,
-                    person.employment,
-                    person.community,
-                    person.committees,
-                ].join("\t");
+                let row;
+
+                if (isFullRun) {
+                    row = [
+                        key,
+                        person.hometown,
+                        person.address,
+                        person.phone,
+                        person.fax,
+                        person.education,
+                        person.politics,
+                        person.employment,
+                        person.community,
+                        person.committees,
+                    ].join("\t");
+                } else {
+                    row = [key, person.legislation, person.image_formula, person.image_url].join("\t");
+                }
 
                 csvContent += row + "\n";
             }
@@ -133,8 +157,11 @@ const Body = () => {
 
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
-                    <button onClick={handleScraper} disabled={isScraping}>
-                        <p>Run Scraper</p>
+                    <button onClick={() => handleScraperCommand(true)} disabled={isScraping}>
+                        <p>Run Full Scraper</p>
+                    </button>
+                    <button onClick={() => handleScraperCommand(false)} disabled={isScraping}>
+                        <p>Run Legislative Scraper</p>
                     </button>
                     <button onClick={() => convertJsonToCSV(csvJson)} disabled={isScraping}>
                         <p>Save Output</p>

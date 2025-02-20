@@ -29,7 +29,8 @@ import json
 import queue
 import logging
 
-from houseScraper_async_full import run_scraper
+from houseScraper_async_full import run_scraper as run_scraper_full
+from houseScraper_async_partial import run_scraper as run_scraper_partial
 
 
 # This will hold the text updates for the frontend.
@@ -50,9 +51,13 @@ async def receive_from_frontend(websocket):
 
             msg_json = json.loads(message)
 
-            if msg_json["msg_type"] == "command" and msg_json["msg"] == "start_scraper":
+            if msg_json["msg_type"] == "command" and msg_json["msg"] == "start_full_scraper":
                 print("Starting scraper...")
-                asyncio.create_task(run_scraper_handler(websocket))
+                asyncio.create_task(run_scraper_handler(websocket, True))
+                await send_to_frontend(websocket)
+            elif msg_json["msg_type"] == "command" and msg_json["msg"] == "start_partial_scraper":
+                print("Starting scraper...")
+                asyncio.create_task(run_scraper_handler(websocket, False))
                 await send_to_frontend(websocket)
 
         except websockets.exceptions.ConnectionClosed:
@@ -121,7 +126,7 @@ async def sendJson(websocket, people_json):
     await websocket.close()
 
 
-async def run_scraper_handler(websocket):
+async def run_scraper_handler(websocket, run_full):
     """
     Run the scraper and sends progress updates to the frontend.
 
@@ -133,7 +138,10 @@ async def run_scraper_handler(websocket):
         to the frontend used to communicate to the front end.
     """
     try:
-        await run_scraper(add_to_ui_queue, sendJson, websocket)
+        if run_full:
+            await run_scraper_full(add_to_ui_queue, sendJson, websocket)
+        else:
+            await run_scraper_partial(add_to_ui_queue, sendJson, websocket)
         add_to_ui_queue('{"msg_type": "update", "msg": "Finished from websocket"}')
     except Exception as e:
         # Log the error and notify the client if error occurs

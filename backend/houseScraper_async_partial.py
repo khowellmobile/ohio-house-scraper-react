@@ -39,6 +39,7 @@ from bs4 import BeautifulSoup  # type: ignore
 from google import genai  # Assuming this supports async, or you can wrap it
 import queue
 import os
+import re
 from dotenv import load_dotenv  # type: ignore
 
 from utils import (
@@ -81,132 +82,8 @@ async def fetch_data(session, url):
         return await response.text()
 
 
-# Fetch representative information
-async def get_info(session, rep_name, add_to_ui_queue, error_queue):
-    """
-    Fetch representative information (hometown, address, phone, fax).
-
-    Scrapes the representative's page for personal details like hometown,
-    address, phone number, and fax number. Returns default values if not found.
-
-    Args:
-        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
-        rep_name (str): The name of the representative whose details are being fetched.
-        add_to_ui_queue (function): A callback function to send updates to the frontend.
-        error_queue (queue.Queue): A queue to store names of representatives with errors.
-
-    Returns:
-        tuple: Hometown, address, phone number, and fax number of the representative.
-    """
-    address_keywords = ["77", "High", "Street", "St.", "South", "S.", "Floor"]
-    url = f"https://ohiohouse.gov/members/{rep_name}"
-    response = await fetch_data(session, url)
-
-    if not response:
-        add_to_ui_queue(create_formatted_json_msg("res_error", rep_name))
-        error_queue.put(rep_name)
-        return "Response Error", "Response Error", "Response Error", "Response Error"
-
-    soup = BeautifulSoup(response, "html.parser")
-
-    divs = soup.find_all("div", class_="member-info-bar-module")
-
-    home_town = address = phone_number = fax_number = "Not Listed"
-
-    for module in divs:
-        module_text = module.get_text()
-        if "Hometown" in module_text:
-            home_town = module.find("div", class_="member-info-bar-value").text.strip()
-
-        if any(keyword in module_text for keyword in address_keywords):
-            address_number_module = module.find_all(
-                "div", class_="member-info-bar-value"
-            )
-            address = address_number_module[0].text.strip()
-            phone_number = address_number_module[1].text.strip().replace("Phone: ", "")
-            fax_number = address_number_module[2].text.strip().replace("Fax: ", "")
-
-    return home_town, address, phone_number, fax_number
-
-
-# Fetch bio details
-async def get_bio(session, rep_name, add_to_ui_queue, error_queue):
-    """
-    Fetch representative biography details and process using AI.
-
-    Scrapes the representative's biography and uses AI to process and format it.
-    Returns error messages or the processed details if successful.
-
-    Args:
-        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
-        rep_name (str): The name of the representative whose biography is being fetched.
-        add_to_ui_queue (function): A function to send updates to the frontend.
-        error_queue (queue.Queue): A queue to store names of representatives with errors.
-
-    Returns:
-        tuple: Biography-related details (education, politics, employment, community).
-    """
-    url = f"https://ohiohouse.gov/members/{rep_name}/biography"
-    response = await fetch_data(session, url)
-
-    if not response:
-        add_to_ui_queue(create_formatted_json_msg("res_error", rep_name))
-        error_queue.put(rep_name)
-        return "Response Error", "Response Error", "Response Error", "Response Error"
-
-    soup = BeautifulSoup(response, "html.parser")
-
-    bio_block = soup.find("div", class_="gray-block")
-
-    if bio_block:
-        bio_paragraphs = bio_block.find_all("p")
-
-        if bio_paragraphs:
-            combined_bio = " ".join(
-                paragraph.text.strip() for paragraph in bio_paragraphs
-            )
-
-            try:
-                response = await asyncio.to_thread(
-                    client.models.generate_content,
-                    model="gemini-1.5-flash",
-                    contents=get_ai_prompt(combined_bio),
-                )
-            except Exception as e:
-                print(f"Gemini Response Error: {e}")
-                add_to_ui_queue(create_formatted_json_msg("ai_error", rep_name))
-                error_queue.put(rep_name)
-                return "AI Error", "AI Error", "AI Error", "AI Error"
-
-            values = response.text.split("|")
-
-            if len(values) < 4:
-                add_to_ui_queue(create_formatted_json_msg("ai_error", rep_name))
-                error_queue.put(rep_name)
-                return "AI Error", "AI Error", "AI Error", "AI Error"
-
-            return values[0], values[1], values[2], values[3]
-
-    return "Bio Not Found", "Bio Not Found", "Bio Not Found", "Bio Not Found"
-
-
-# Fetch committees information
-async def get_committees(session, rep_name, add_to_ui_queue, error_queue):
-    """
-    Fetch representative committee memberships.
-
-    Scrapes the representative's committees and returns a list of their names.
-
-    Args:
-        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
-        rep_name (str): The name of the representative whose committee info is being fetched.
-        add_to_ui_queue (function): A function to send updates to the frontend.
-        error_queue (queue.Queue): A queue to store names of representatives with errors.
-
-    Returns:
-        str: A comma-separated list of committees the representative is a member of.
-    """
-    url = f"https://ohiohouse.gov/members/{rep_name}/committees"
+async def get_legislation(session, rep_name, add_to_ui_queue, error_queue):
+    url = f"https://ohiohouse.gov/members/{rep_name}/legislation"
     response = await fetch_data(session, url)
 
     if not response:
@@ -216,11 +93,58 @@ async def get_committees(session, rep_name, add_to_ui_queue, error_queue):
 
     soup = BeautifulSoup(response, "html.parser")
 
-    media_captions = soup.find_all("div", class_="media-overlay-caption")
+    legislation_tables = soup.find_all("table", class_="member-legislation-table")
 
-    committees = ", ".join(caption.text.strip() for caption in media_captions)
+    table = None
 
-    return committees
+    # Finding needed table
+    for val in legislation_tables:
+        caption = val.find("caption")
+
+        if caption and "Primary Sponsored Bills" in caption.text:
+            table = val
+
+    if not table:
+        return "No Primary Sponsored Bills Found"
+
+    primary_legislation = []
+
+    for tbody in table.find_all("tbody"):
+        bill_num = tbody.find("a").text
+        bill_title = tbody.find("td", class_="title-cell").text
+
+        primary_legislation.append(bill_num + " " + bill_title)
+
+    return "<newline>".join(primary_legislation)
+
+
+async def get_image_url(session, rep_name, add_to_ui_queue, error_queue):
+    url = f"https://ohiohouse.gov/members/directory?start=1&sort=LastName"
+    response = await fetch_data(session, url)
+
+    if not response:
+        add_to_ui_queue(create_formatted_json_msg("res_error", rep_name))
+        error_queue.put(rep_name)
+        return "Response Error"
+
+    soup = BeautifulSoup(response, "html.parser")
+
+    all_portraits = soup.find_all("div", class_="media-container-portrait")
+
+    image_url = "Image not found"
+
+    for div in all_portraits:
+        name = div.find("div", class_="media-overlay-caption-text-line-1").text
+        if (
+            rep_name
+            == name.strip().replace(" ", "-").replace(".", "").replace(",", "").lower()
+        ):
+            image_div = div.find("div", class_="media-thumbnail-image")
+            image_url = re.search(r"url\((.*?)\)", image_div["style"]).group(1)
+
+    formula_wrapped_url = f'=IMAGE("https://ohiohouse.gov{image_url}")'
+
+    return formula_wrapped_url, f"https://ohiohouse.gov{image_url}"
 
 
 # Process each representative concurrently
@@ -243,27 +167,19 @@ async def process_rep(session, rep_name, add_to_ui_queue, result_queue, error_qu
     """
     rep_obj = {}
 
-    # Run all the async functions concurrently for each rep
     tasks = [
-        get_info(session, rep_name, add_to_ui_queue, error_queue),
-        get_bio(session, rep_name, add_to_ui_queue, error_queue),
-        get_committees(session, rep_name, add_to_ui_queue, error_queue),
+        get_legislation(session, rep_name, add_to_ui_queue, error_queue),
+        get_image_url(session, rep_name, add_to_ui_queue, error_queue),
     ]
+
+    # Run all the async functions concurrently for each rep
     add_to_ui_queue(create_formatted_json_msg("start_rep", rep_name))
     results = await asyncio.gather(*tasks)
     add_to_ui_queue(create_formatted_json_msg("finish_rep", rep_name))
 
     # Assign results to rep_obj
-    rep_obj["hometown"], rep_obj["address"], rep_obj["phone"], rep_obj["fax"] = results[
-        0
-    ]
-    (
-        rep_obj["education"],
-        rep_obj["politics"],
-        rep_obj["employment"],
-        rep_obj["community"],
-    ) = results[1]
-    rep_obj["committees"] = results[2]
+    rep_obj["legislation"] = results[0]
+    (rep_obj["image_formula"], rep_obj["image_url"]) = results[1]
 
     result_queue.put({rep_name: rep_obj})
 
