@@ -301,10 +301,10 @@ async def run_scraper(add_to_ui_queue, sendJson, websocket):
             )
 
         while not error_queue.empty():
+            await asyncio.sleep(4)
             await process_rep(
                 session, error_queue.get(), add_to_ui_queue, result_queue, error_queue
             )
-            await asyncio.sleep(4)
 
         # Adding corrected reps to peeople
         while not result_queue.empty():
