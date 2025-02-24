@@ -48,7 +48,7 @@ def get_representative_list():
 
     rep_name_divs = soup.find_all("div", class_="media-overlay-caption-text-line-1")
 
-    for div in rep_name_divs[:30]:
+    for div in rep_name_divs:
         # Use re.sub in future
         rep_names.append(
             div.text.strip().replace(" ", "-").replace(".", "").replace(",", "").lower()
@@ -96,6 +96,41 @@ def getTime():
     formatted_time = time.strftime("%H:%M:%S", current_time)
 
     return formatted_time
+
+def create_json_list(people_dict):
+    """
+    Converts the dictionary of people data into a formatted JSON string.
+
+    Iterates through the `people_dict`, cleans and standardizes each value by removing
+    unwanted whitespace and newlines, and then converts the dictionary to a JSON string.
+
+    Args:
+        people_dict (dict): A dictionary containing people data to be formatted.
+
+    Returns:
+        str: A JSON-formatted string of the cleaned `people_dict`.
+    """
+    for key, val in people_dict.items():
+        for sub_key, sub_val in val.items():
+            val[sub_key] = re.sub(r"\s+", " ", sub_val).replace(", ,", "")
+            val[sub_key] = re.sub(r"[\r\n\u2028\u2029]+", " ", sub_val)
+
+    people_json = json.dumps(people_dict)
+
+    people_json = re.sub(r"[\r\n\u2028\u2029]+", " ", people_json)
+
+    return people_json
+
+
+def create_formatted_json_msg(kind, rep_name):
+    if kind == "start_rep":
+        return f'{{"msg_type":"update", "msg":"Processing: {rep_name}"}}'
+    elif kind == "finish_rep":
+        return f'{{"msg_type":"update", "msg":"Finished Processing: {rep_name}"}}'
+    elif kind == "res_error":
+        return f'{{"msg_type":"error", "msg":"Error: Response Error. Adding {rep_name} to error queue"}}'
+    elif kind == "ai_error":
+        return f'{{"msg_type":"error", "msg":"Error: AI Format Error. Adding {rep_name} to error queue"}}'
 
 
 def get_ai_prompt(combined_bio):
@@ -237,39 +272,3 @@ Section 5. (Biography)
     Biography:"""
 
     return ai_prompt_text + " " + combined_bio
-
-
-def create_json_list(people_dict):
-    """
-    Converts the dictionary of people data into a formatted JSON string.
-
-    Iterates through the `people_dict`, cleans and standardizes each value by removing
-    unwanted whitespace and newlines, and then converts the dictionary to a JSON string.
-
-    Args:
-        people_dict (dict): A dictionary containing people data to be formatted.
-
-    Returns:
-        str: A JSON-formatted string of the cleaned `people_dict`.
-    """
-    for key, val in people_dict.items():
-        for sub_key, sub_val in val.items():
-            val[sub_key] = re.sub(r"\s+", " ", sub_val).replace(", ,", "")
-            val[sub_key] = re.sub(r"[\r\n\u2028\u2029]+", " ", sub_val)
-
-    people_json = json.dumps(people_dict)
-
-    people_json = re.sub(r"[\r\n\u2028\u2029]+", " ", people_json)
-
-    return people_json
-
-
-def create_formatted_json_msg(kind, rep_name):
-    if kind == "start_rep":
-        return f'{{"msg_type":"update", "msg":"Processing: {rep_name}"}}'
-    elif kind == "finish_rep":
-        return f'{{"msg_type":"update", "msg":"Finished Processing: {rep_name}"}}'
-    elif kind == "res_error":
-        return f'{{"msg_type":"error", "msg":"Error: Response Error. Adding {rep_name} to error queue"}}'
-    elif kind == "ai_error":
-        return f'{{"msg_type":"error", "msg":"Error: AI Format Error. Adding {rep_name} to error queue"}}'
