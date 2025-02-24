@@ -31,6 +31,7 @@ import logging
 
 from houseScraper_async_full import run_scraper as run_scraper_full
 from houseScraper_async_partial import run_scraper as run_scraper_partial
+from utils import get_representative_list
 
 
 # This will hold the text updates for the frontend.
@@ -59,6 +60,12 @@ async def receive_from_frontend(websocket):
                 print("Starting scraper...")
                 asyncio.create_task(run_scraper_handler(websocket, False))
                 await send_to_frontend(websocket)
+            elif msg_json["msg_type"] == "command" and msg_json["msg"] == "get_rep_names":
+                names = json.dumps(get_representative_list())
+                json_return_msg = f'{{"msg_type":"data", "msg":{names}}}'
+                await websocket.send(json_return_msg)
+                await websocket.close()
+
 
         except websockets.exceptions.ConnectionClosed:
             # If the connection is closed, stop listening for messages
