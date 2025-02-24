@@ -6,9 +6,11 @@ import RepName from "../RepItem";
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
-    const [csvJson, setCsvJson] = useState();
     const [isFullRun, setIsFullRun] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(true);
+    const [csvJson, setCsvJson] = useState();
+
+    const [lockNames, setLockedNames] = useState(false);
 
     const [reps, setReps] = useState({});
     const [chunks, setChunks] = useState([]);
@@ -55,7 +57,7 @@ const Body = () => {
                     } else if (message["msg_type"] === "error") {
                         setMessages((prevMessages) => [...prevMessages, message["msg"]]);
                     } else if (message["msg_type"] === "data") {
-                        populateReps(message["msg"]);
+                        initializeReps(message["msg"]);
                     }
                 } else {
                     setCsvJson(message);
@@ -87,14 +89,47 @@ const Body = () => {
         container.scrollTop = container.scrollHeight;
     }, [messages]); */
 
-    const populateReps = (names) => {
+    const initializeReps = (names) => {
         names.forEach((name) => {
             setReps((prevReps) => ({
                 ...prevReps,
-                [name]: {},
+                [name]: {
+                    hometown: "",
+                    address: "",
+                    phone: "",
+                    fax: "",
+                    education: "",
+                    politics: "",
+                    employment: "",
+                    community: "",
+                    committees: "",
+                    legislation: "",
+                    image_formula: "",
+                    image_url: "",
+                },
             }));
         });
     };
+
+    useEffect(() => {
+        if (csvJson) {
+            const populateReps = () => {
+                Object.entries(csvJson).forEach(([name, person]) => {
+                    if (reps[name]) {
+                        setReps((prevReps) => ({
+                            ...prevReps,
+                            [name]: {
+                                ...prevReps[name],
+                                ...person,
+                            },
+                        }));
+                    }
+                });
+            };
+
+            populateReps();
+        }
+    }, [csvJson]);
 
     const chunkArray = (array, size) => {
         const result = [];
@@ -108,9 +143,14 @@ const Body = () => {
         const repNames = Object.keys(reps);
         const chunkedReps = chunkArray(repNames, 20);
         setChunks(chunkedReps);
+        console.log(reps);
     }, [reps]);
 
-    const convertJsonToCSV = (csvJson) => {
+    useEffect(() => {
+        console.log(csvJson);
+    }, [csvJson]);
+
+    const downloadReps = () => {
         let headers;
 
         if (isFullRun) {
@@ -132,31 +172,27 @@ const Body = () => {
 
         let csvContent = headers.join("\t") + "\n";
 
-        for (const key in csvJson) {
-            if (csvJson.hasOwnProperty(key)) {
-                const person = csvJson[key];
-                let row;
-
-                if (isFullRun) {
-                    row = [
-                        key,
-                        person.hometown,
-                        person.address,
-                        person.phone,
-                        person.fax,
-                        person.education,
-                        person.politics,
-                        person.employment,
-                        person.community,
-                        person.committees,
-                    ].join("\t");
-                } else {
-                    row = [key, person.legislation, person.image_formula, person.image_url].join("\t");
-                }
-
-                csvContent += row + "\n";
+        Object.entries(reps).forEach(([key, name]) => {
+            let row;
+            if (isFullRun) {
+                row = [
+                    key,
+                    name.hometown,
+                    name.address,
+                    name.phone,
+                    name.fax,
+                    name.education,
+                    name.politics,
+                    name.employment,
+                    name.community,
+                    name.committees,
+                ].join("\t");
+            } else {
+                row = [key, name.legislation, name.image_formula, name.image_url].join("\t");
             }
-        }
+
+            csvContent += row + "\n";
+        });
 
         const blob = new Blob([csvContent], { type: "text/plain" });
 
@@ -167,69 +203,11 @@ const Body = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
-        console.log(csvJson);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
-
-    const firstNames = [
-        "John",
-        "Jane",
-        "Michael",
-        "Sarah",
-        "David",
-        "Emily",
-        "James",
-        "Amanda",
-        "Chris",
-        "Jessica",
-        "Daniel",
-        "Olivia",
-        "Ryan",
-        "Samantha",
-        "Matthew",
-        "Sophia",
-        "Andrew",
-        "Isabella",
-        "William",
-        "Charlotte",
-    ];
-    const lastNames = [
-        "Doe",
-        "Smith",
-        "Johnson",
-        "Brown",
-        "Taylor",
-        "Anderson",
-        "Davis",
-        "Wilson",
-        "Moore",
-        "Jackson",
-        "Martin",
-        "Lee",
-        "Perez",
-        "Harris",
-        "Clark",
-        "Rodriguez",
-        "Lewis",
-        "Walker",
-        "Young",
-        "King",
-    ];
-
-    const generateRandomNames = () => {
-        return Array.from({ length: 20 }, () => {
-            const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-            const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-            return `${firstName} ${lastName}`;
-        });
-    };
-
-    // State variable to store the random numbers
-    const [repNames, setRepNames] = useState(generateRandomNames);
 
     return (
         <>
@@ -243,10 +221,10 @@ const Body = () => {
                     <button onClick={() => handleScraperCommand("start_partial_scraper")} disabled={isScraping}>
                         <p>Run Legislative Scraper</p>
                     </button>
-                    <button onClick={() => handleScraperCommand("get_rep_names")} disabled={isScraping}>
+                    <button onClick={() => handleScraperCommand("get_rep_names")} disabled={lockNames}>
                         <p>Get Names</p>
                     </button>
-                    <button onClick={() => convertJsonToCSV(csvJson)} disabled={isScraping}>
+                    <button onClick={() => downloadReps()} disabled={isScraping}>
                         <p>Save Output</p>
                     </button>
                 </div>

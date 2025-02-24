@@ -253,6 +253,8 @@ async def process_rep(session, rep_name, add_to_ui_queue, result_queue, error_qu
     results = await asyncio.gather(*tasks)
     add_to_ui_queue(create_formatted_json_msg("finish_rep", rep_name))
 
+    print(rep_name)
+
     # Assign results to rep_obj
     rep_obj["hometown"], rep_obj["address"], rep_obj["phone"], rep_obj["fax"] = results[
         0
