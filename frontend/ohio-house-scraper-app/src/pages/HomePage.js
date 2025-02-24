@@ -1,6 +1,6 @@
-import Body from "../components/layout/Body"
-import Footer from "../components/layout/Footer"
-import Header from "../components/layout/Header"
+import Body from "../components/Body"
+import Footer from "../components/Footer"
+import Header from "../components/Header"
 import classes from "./HomePage.module.css"
 
 const HomePage = () => {

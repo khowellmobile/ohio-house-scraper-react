@@ -36,7 +36,7 @@ Date: 2/18/2025
 import asyncio
 import aiohttp  # type: ignore
 from bs4 import BeautifulSoup  # type: ignore
-from google import genai 
+from google import genai  # Assuming this supports async, or you can wrap it
 import queue
 import os
 import re
