@@ -96,8 +96,6 @@ async def send_to_frontend(websocket):
             try:
                 await websocket.send(text)
             except websockets.exceptions.ConnectionClosed:
-                # If the WebSocket is closed, stop trying to send messages
-                print("WebSocket is closed. Stopping sending messages.")
                 break
 
         except queue.Empty:
