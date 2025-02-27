@@ -143,12 +143,11 @@ const Body = () => {
         const repNames = Object.keys(reps);
         const chunkedReps = chunkArray(repNames, 20);
         setChunks(chunkedReps);
-        console.log(reps);
     }, [reps]);
 
     useEffect(() => {
-        console.log(csvJson);
-    }, [csvJson]);
+        handleScraperCommand("get_rep_names");
+    }, []);
 
     const downloadReps = () => {
         let headers;
@@ -220,9 +219,6 @@ const Body = () => {
                     </button>
                     <button onClick={() => handleScraperCommand("start_partial_scraper")} disabled={isScraping}>
                         <p>Run Legislative Scraper</p>
-                    </button>
-                    <button onClick={() => handleScraperCommand("get_rep_names")} disabled={lockNames}>
-                        <p>Get Names</p>
                     </button>
                     <button onClick={() => downloadReps()} disabled={isScraping}>
                         <p>Save Output</p>
