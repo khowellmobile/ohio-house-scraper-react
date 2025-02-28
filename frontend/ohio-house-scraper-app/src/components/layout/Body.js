@@ -1,7 +1,7 @@
 import classes from "./Body.module.css";
 import { useState, useEffect, useRef } from "react";
 import HelloModal from "../HelloModal";
-import RepName from "../RepItem";
+import RepItem from "../RepItem";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
@@ -10,10 +10,9 @@ const Body = () => {
     const [isModalOpen, setIsModalOpen] = useState(true);
     const [csvJson, setCsvJson] = useState();
 
-    const [lockNames, setLockedNames] = useState(false);
+    const [lockSocket, setLockSocket] = useState(false);
 
     const [reps, setReps] = useState({});
-    const [chunks, setChunks] = useState([]);
 
     const handleScraperCommand = (command) => {
         if (command === "start_full_scraper") {
@@ -30,6 +29,13 @@ const Body = () => {
     };
 
     const handleScraper = (initial_command) => {
+        if (lockSocket) {
+            console.log("Web Socket currently in use. Wait a few minutes.");
+            return;
+        }
+
+        setLockSocket(true);
+
         const socket = new WebSocket("ws://localhost:65432");
 
         socket.onopen = () => {
@@ -77,17 +83,13 @@ const Body = () => {
             console.log("Disconnected from WebSocket server");
             setMessages((prevMessages) => [...prevMessages, "Closing WebSocket"]);
             setIsScraping(false);
+            setLockSocket(false);
         };
 
         return () => {
             socket.close();
         };
     };
-
-    /* useEffect(() => {
-        const container = scrollRef.current;
-        container.scrollTop = container.scrollHeight;
-    }, [messages]); */
 
     const initializeReps = (names) => {
         names.forEach((name) => {
@@ -110,45 +112,6 @@ const Body = () => {
             }));
         });
     };
-
-    useEffect(() => {
-        if (csvJson) {
-            const populateReps = () => {
-                Object.entries(csvJson).forEach(([name, person]) => {
-                    if (reps[name]) {
-                        setReps((prevReps) => ({
-                            ...prevReps,
-                            [name]: {
-                                ...prevReps[name],
-                                ...person,
-                            },
-                        }));
-                    }
-                });
-            };
-
-            populateReps();
-        }
-    }, [csvJson]);
-
-    const chunkArray = (array, size) => {
-        const result = [];
-        for (let i = 0; i < array.length; i += size) {
-            result.push(array.slice(i, i + size));
-        }
-        return result;
-    };
-
-    useEffect(() => {
-        const repNames = Object.keys(reps);
-        const chunkedReps = chunkArray(repNames, 20);
-        setChunks(chunkedReps);
-        console.log(reps);
-    }, [reps]);
-
-    useEffect(() => {
-        console.log(csvJson);
-    }, [csvJson]);
 
     const downloadReps = () => {
         let headers;
@@ -209,6 +172,39 @@ const Body = () => {
         setIsModalOpen(false);
     };
 
+    useEffect(() => {
+        if (csvJson) {
+            const populateReps = () => {
+                Object.entries(csvJson).forEach(([name, person]) => {
+                    if (reps[name]) {
+                        setReps((prevReps) => ({
+                            ...prevReps,
+                            [name]: {
+                                ...prevReps[name],
+                                ...person,
+                            },
+                        }));
+                    }
+                });
+            };
+
+            populateReps();
+        }
+    }, [csvJson]);
+
+    useEffect(() => {
+        console.log("csvJson", csvJson);
+        console.log("reps", reps);
+    }, [csvJson, reps]);
+
+    useEffect(() => {
+        const repEntries = Object.entries(reps);
+    }, [reps]);
+
+    useEffect(() => {
+        handleScraperCommand("get_rep_names");
+    }, []);
+
     return (
         <>
             {isModalOpen && <HelloModal handleCloseModal={handleCloseModal} />}
@@ -221,22 +217,14 @@ const Body = () => {
                     <button onClick={() => handleScraperCommand("start_partial_scraper")} disabled={isScraping}>
                         <p>Run Legislative Scraper</p>
                     </button>
-                    <button onClick={() => handleScraperCommand("get_rep_names")} disabled={lockNames}>
-                        <p>Get Names</p>
-                    </button>
                     <button onClick={() => downloadReps()} disabled={isScraping}>
                         <p>Save Output</p>
                     </button>
                 </div>
                 <div className={classes.repListing}>
-                    {chunks.length > 0 && // Ensure chunks are available
-                        chunks.map((chunk, index) => (
-                            <div key={index}>
-                                {chunk.map((name, subIndex) => (
-                                    <RepName key={subIndex} repName={name} status={"question"} canRefresh={false} />
-                                ))}
-                            </div>
-                        ))}
+                    {Object.entries(reps).map(([key, repInfo], index) => (
+                        <RepItem key={index} repName={key} repInfo={repInfo} />
+                    ))}
                 </div>
             </div>
         </>

@@ -1,0 +1,68 @@
+.modalOverlay {
+    background-color: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.mainContainer {
+    width: 50rem;
+    max-height: 90%;
+    padding: 1.5rem;
+
+    border-radius: 0.5rem;
+    background-color: white;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.closeButton {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+
+    background-color: rgb(41, 41, 54);
+    outline: none;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+
+    color: white;
+    font-size: 1rem;
+    font-family: "poppins";
+
+    transition: transform ease 0.25s;
+    will-change: transform;
+}
+
+.closeButton :hover {
+    transform: translateY(-1px);
+}
+
+.closeButton :active {
+    transform: translateY(1px);
+}
+
+.infoListing {
+    width: 100%;
+}
+
+.infoListing > div {
+    width: 100%;
+    padding: 0.25rem;
+    outline: 1px solid rgb(204, 204, 204);
+    border-radius: 0.25rem;
+
+    font-size: 0.9rem;
+}
