@@ -10,7 +10,7 @@ import { ReactComponent as RefreshIcon } from "../assets/svgs/refresh-icon.svg";
 import { ReactComponent as NoRefreshIcon } from "../assets/svgs/no-refresh-icon.svg";
 import PeakModal from "./PeakModal";
 
-const RepName = ({ repName, repInfo, status, canRefresh }) => {
+const RepItem = ({ repName, repInfo, status, canRefresh }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleCloseModal = () => {
@@ -53,4 +53,4 @@ const RepName = ({ repName, repInfo, status, canRefresh }) => {
     );
 };
 
-export default RepName;
+export default RepItem;

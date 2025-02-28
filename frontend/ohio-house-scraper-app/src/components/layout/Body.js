@@ -241,7 +241,7 @@ const Body = () => {
                                     <RepItem
                                         key={name}
                                         repName={name}
-                                        repInfo={{...repInfo}}
+                                        repInfo={repInfo}
                                         status={"question"}
                                         canRefresh={false}
                                     />
