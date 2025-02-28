@@ -35,7 +35,7 @@ const RepName = ({ repName, repInfo, status, canRefresh }) => {
 
     return (
         <>
-            {isModalOpen && <PeakModal handleCloseModal={handleCloseModal} />}
+            {isModalOpen && <PeakModal repInfo={repInfo} handleCloseModal={handleCloseModal} />}
 
             <div className={classes.mainContainer}>
                 <div className={classes.infoContainer}>

@@ -129,6 +129,7 @@ async def sendJson(websocket, people_json):
     """
     await websocket.send(people_json)
     await websocket.close()
+    print("WebSocket Closed", "132")
 
 
 async def run_scraper_handler(websocket, run_full):

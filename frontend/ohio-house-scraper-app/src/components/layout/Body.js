@@ -21,7 +21,6 @@ const Body = () => {
             setIsFullRun(true);
         } else if (command === "start_partial_scraper") {
             handleScraper("start_partial_scraper");
-            console.log("---------------------------------");
             setIsFullRun(false);
         } else if (command === "get_rep_names") {
             handleScraper("get_rep_names");
@@ -203,6 +202,12 @@ const Body = () => {
     }, [csvJson]);
 
     useEffect(() => {
+        console.log("csvJson", csvJson);
+        console.log("reps", reps);
+        console.log("chunks", chunks);
+    }, [csvJson, reps, chunks]);
+
+    useEffect(() => {
         const repEntries = Object.entries(reps);
         const chunkedReps = chunkArray(repEntries, 20);
         setChunks(chunkedReps);
@@ -232,11 +237,11 @@ const Body = () => {
                     {chunks.length > 0 && // Ensure chunks are available
                         chunks.map((chunk, index) => (
                             <div key={index}>
-                                {chunk.map(([name, rep], subIndex) => (
+                                {chunk.map(([name, repInfo], subIndex) => (
                                     <RepItem
-                                        key={subIndex}
+                                        key={name}
                                         repName={name}
-                                        repInfo={rep}
+                                        repInfo={{...repInfo}}
                                         status={"question"}
                                         canRefresh={false}
                                     />
