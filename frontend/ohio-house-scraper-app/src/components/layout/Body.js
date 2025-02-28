@@ -13,7 +13,6 @@ const Body = () => {
     const [lockSocket, setLockSocket] = useState(false);
 
     const [reps, setReps] = useState({});
-    const [chunks, setChunks] = useState([]);
 
     const handleScraperCommand = (command) => {
         if (command === "start_full_scraper") {
@@ -114,14 +113,6 @@ const Body = () => {
         });
     };
 
-    const chunkArray = (array, size) => {
-        const result = [];
-        for (let i = 0; i < array.length; i += size) {
-            result.push(array.slice(i, i + size));
-        }
-        return result;
-    };
-
     const downloadReps = () => {
         let headers;
 
@@ -204,13 +195,10 @@ const Body = () => {
     useEffect(() => {
         console.log("csvJson", csvJson);
         console.log("reps", reps);
-        console.log("chunks", chunks);
-    }, [csvJson, reps, chunks]);
+    }, [csvJson, reps]);
 
     useEffect(() => {
         const repEntries = Object.entries(reps);
-        const chunkedReps = chunkArray(repEntries, 20);
-        setChunks(chunkedReps);
     }, [reps]);
 
     useEffect(() => {
@@ -234,20 +222,9 @@ const Body = () => {
                     </button>
                 </div>
                 <div className={classes.repListing}>
-                    {chunks.length > 0 && // Ensure chunks are available
-                        chunks.map((chunk, index) => (
-                            <div key={index}>
-                                {chunk.map(([name, repInfo], subIndex) => (
-                                    <RepItem
-                                        key={name}
-                                        repName={name}
-                                        repInfo={repInfo}
-                                        status={"question"}
-                                        canRefresh={false}
-                                    />
-                                ))}
-                            </div>
-                        ))}
+                    {Object.entries(reps).map(([key, repInfo], index) => (
+                        <RepItem key={index} repName={key} repInfo={repInfo} />
+                    ))}
                 </div>
             </div>
         </>

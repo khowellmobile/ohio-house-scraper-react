@@ -49,13 +49,7 @@ button > p {
     height: 100%;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-}
+    grid-template-rows: repeat(20, 1fr);
 
-.repListing > div {
-    height: 100%;
-    padding: 0.25rem;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    gap: 0.5rem;
 }
