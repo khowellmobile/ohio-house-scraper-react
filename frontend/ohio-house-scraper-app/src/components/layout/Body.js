@@ -1,5 +1,5 @@
 import classes from "./Body.module.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import HelloModal from "../HelloModal";
 import RepItem from "../RepItem";
 
@@ -59,7 +59,7 @@ const Body = () => {
 
                 if ("msg_type" in message) {
                     if (message["msg_type"] === "update") {
-                        setMessages((prevMessages) => [...prevMessages, message["msg"]]);
+                        handleRepUpdate(message);
                     } else if (message["msg_type"] === "error") {
                         setMessages((prevMessages) => [...prevMessages, message["msg"]]);
                     } else if (message["msg_type"] === "data") {
@@ -91,26 +91,53 @@ const Body = () => {
         };
     };
 
+    const handleRepUpdate = (message) => {
+        let status_mode;
+        if ("rep_name" in message) {
+            console.log(message);
+            if (message["msg"].includes("Finished")) {
+                status_mode = "checked";
+                console.log("checking");
+            } else {
+                status_mode = "pen";
+                console.log("penning");
+            }
+
+            setReps((prevReps) => {
+                const updatedReps = { ...prevReps };
+
+                if (updatedReps[message["rep_name"]]) {
+                    updatedReps[message["rep_name"]] = {
+                        ...updatedReps[message["rep_name"]],
+                        status: status_mode,
+                    };
+                }
+
+                return updatedReps;
+            });
+        }
+    };
+
     const initializeReps = (names) => {
+        const newReps = {};
         names.forEach((name) => {
-            setReps((prevReps) => ({
-                ...prevReps,
-                [name]: {
-                    hometown: "",
-                    address: "",
-                    phone: "",
-                    fax: "",
-                    education: "",
-                    politics: "",
-                    employment: "",
-                    community: "",
-                    committees: "",
-                    legislation: "",
-                    image_formula: "",
-                    image_url: "",
-                },
-            }));
+            newReps[name] = {
+                hometown: "",
+                address: "",
+                phone: "",
+                fax: "",
+                education: "",
+                politics: "",
+                employment: "",
+                community: "",
+                committees: "",
+                legislation: "",
+                image_formula: "",
+                image_url: "",
+                status: "question",
+            };
         });
+        setReps(newReps);
     };
 
     const downloadReps = () => {
@@ -172,6 +199,7 @@ const Body = () => {
         setIsModalOpen(false);
     };
 
+    /** Populates reps with data when csvJson is recieved */
     useEffect(() => {
         if (csvJson) {
             const populateReps = () => {
@@ -192,14 +220,10 @@ const Body = () => {
         }
     }, [csvJson]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         console.log("csvJson", csvJson);
         console.log("reps", reps);
-    }, [csvJson, reps]);
-
-    useEffect(() => {
-        const repEntries = Object.entries(reps);
-    }, [reps]);
+    }, [csvJson, reps]); */
 
     useEffect(() => {
         handleScraperCommand("get_rep_names");

@@ -44,7 +44,6 @@ from dotenv import load_dotenv  # type: ignore
 
 from utils import (
     get_representative_list,
-    get_ai_prompt,
     create_formatted_json_msg,
     checkURLResponse,
     create_json_list,

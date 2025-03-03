@@ -10,7 +10,7 @@ import { ReactComponent as RefreshIcon } from "../assets/svgs/refresh-icon.svg";
 import { ReactComponent as NoRefreshIcon } from "../assets/svgs/no-refresh-icon.svg";
 import PeakModal from "./PeakModal";
 
-const RepItem = ({ repName, repInfo, status, canRefresh }) => {
+const RepItem = ({ repName, repInfo, canRefresh }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleCloseModal = () => {
@@ -21,7 +21,8 @@ const RepItem = ({ repName, repInfo, status, canRefresh }) => {
         setIsModalOpen(true);
     };
 
-    const getStatusIcon = () => {
+    const getStatusIcon = (status) => {
+/*         console.log(status) */
         switch (status) {
             case "checked":
                 return <CheckedUserIcon className={`${classes.statusIcon}`} />;
@@ -42,7 +43,7 @@ const RepItem = ({ repName, repInfo, status, canRefresh }) => {
                     <div className={classes.nameContainer}>
                         <p>{repName}</p>
                     </div>
-                    <div className={classes.statusContainer}>{getStatusIcon()}</div>
+                    <div className={classes.statusContainer}>{getStatusIcon(repInfo["status"])}</div>
                 </div>
                 <div className={classes.tools}>
                     <EyeIcon className={classes.icon} onClick={handleOpenModal}/>
