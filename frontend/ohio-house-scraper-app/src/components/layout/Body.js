@@ -94,13 +94,10 @@ const Body = () => {
     const handleRepUpdate = (message) => {
         let status_mode;
         if ("rep_name" in message) {
-            console.log(message);
             if (message["msg"].includes("Finished")) {
                 status_mode = "checked";
-                console.log("checking");
             } else {
                 status_mode = "pen";
-                console.log("penning");
             }
 
             setReps((prevReps) => {
@@ -244,6 +241,7 @@ const Body = () => {
                     <button onClick={() => downloadReps()} disabled={isScraping}>
                         <p>Save Output</p>
                     </button>
+                    {isScraping && <div className={classes.spinner}></div>}
                 </div>
                 <div className={classes.repListing}>
                     {Object.entries(reps).map(([key, repInfo], index) => (
