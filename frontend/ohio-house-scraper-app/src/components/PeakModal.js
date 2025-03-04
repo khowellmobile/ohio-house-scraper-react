@@ -1,3 +1,4 @@
+import PeakItem from "./PeakItem.js";
 import classes from "./PeakModal.module.css";
 import { useEffect, useState } from "react";
 
@@ -27,10 +28,10 @@ const PeakModal = ({ repInfo, handleCloseModal }) => {
         if (field.trim() === "" || field === null) {
             return "Information not ready";
         }
-    
+
         return field;
     };
-    
+
     return (
         <div className={classes.modalOverlay}>
             <div className={classes.mainContainer}>
@@ -38,34 +39,18 @@ const PeakModal = ({ repInfo, handleCloseModal }) => {
                     Close
                 </button>
                 <div className={classes.infoListing}>
-                    <p>Hometown:</p>
-                    <div className={classes.singleItem}>{getInfo(repInfo["hometown"])}</div>
-                    <p>Address:</p>
-                    <div className={classes.singleItem}>{getInfo(repInfo["address"])}</div>
-                    <p>Phone:</p>
-                    <div className={classes.singleItem}>{getInfo(repInfo["phone"])}</div>
-                    <p>Fax:</p>
-                    <div className={classes.singleItem}>{getInfo(repInfo["fax"])}</div>
-                    <p>Committees:</p>
-                    <div className={classes.listItem}>{getInfo(repInfo["committees"])}</div>
-                    <p>Legislation:</p>
-                    <div className={classes.listItem}>
-                        {legislationList && legislationList.length > 0
-                            ? legislationList.map((val, index) => <div key={index}>{val}</div>)
-                            : "Information not ready"}
-                    </div>
-                    <p>Education:</p>
-                    <div className={classes.listItem}>{getInfo(repInfo["education"])}</div>
-                    <p>Politics:</p>
-                    <div className={classes.listItem}>{getInfo(repInfo["politics"])}</div>
-                    <p>Employment:</p>
-                    <div className={classes.listItem}>{getInfo(repInfo["employment"])}</div>
-                    <p>Community:</p>
-                    <div className={classes.listItem}>{getInfo(repInfo["community"])}</div>
-                    <p>Image Formula:</p>
-                    <div className={classes.singleItem}>{getInfo(repInfo["image_formula"])}</div>
-                    <p>Image Url:</p>
-                    <div className={classes.singleItem}>{getInfo(repInfo["image_url"])}</div>
+                    <PeakItem title="Hometown:" info={getInfo(repInfo["hometown"])} />
+                    <PeakItem title="Address:" info={getInfo(repInfo["address"])} />
+                    <PeakItem title="Phone:" info={getInfo(repInfo["phone"])} />
+                    <PeakItem title="Fax:" info={getInfo(repInfo["fax"])} />
+                    <PeakItem title="Committees:" info={getInfo(repInfo["committees"])} />
+                    <PeakItem title="Legislation:" info="Information not ready" list={legislationList}/>
+                    <PeakItem title="Education:" info={getInfo(repInfo["education"])} />
+                    <PeakItem title="Politics:" info={getInfo(repInfo["politics"])} />
+                    <PeakItem title="Employment:" info={getInfo(repInfo["employment"])} />
+                    <PeakItem title="Community:" info={getInfo(repInfo["community"])} />
+                    <PeakItem title="Image Formula:" info={getInfo(repInfo["image_formula"])} />
+                    <PeakItem title="Image Url:" info={getInfo(repInfo["image_url"])} />
                 </div>
             </div>
         </div>

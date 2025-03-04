@@ -57,12 +57,3 @@
 .infoListing {
     width: 100%;
 }
-
-.infoListing > div {
-    width: 100%;
-    padding: 0.25rem;
-    outline: 1px solid rgb(204, 204, 204);
-    border-radius: 0.25rem;
-
-    font-size: 0.9rem;
-}
