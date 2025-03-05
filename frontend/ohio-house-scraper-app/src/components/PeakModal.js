@@ -2,7 +2,7 @@ import PeakItem from "./PeakItem.js";
 import classes from "./PeakModal.module.css";
 import { useEffect, useState } from "react";
 
-const PeakModal = ({ repInfo, handleCloseModal }) => {
+const PeakModal = ({ repName, repInfo, handleCloseModal }) => {
     const [legislationList, setLegislationList] = useState();
     const [committeeList, setCommitteeList] = useState();
 
@@ -26,7 +26,7 @@ const PeakModal = ({ repInfo, handleCloseModal }) => {
 
     const getInfo = (field) => {
         if (field.trim() === "" || field === null) {
-            return "Information not ready";
+            return "Unavailable";
         }
 
         return field;
@@ -35,16 +35,19 @@ const PeakModal = ({ repInfo, handleCloseModal }) => {
     return (
         <div className={classes.modalOverlay}>
             <div className={classes.mainContainer}>
-                <button className={classes.closeButton} onClick={handleClose}>
-                    Close
-                </button>
+                <div className={classes.header}>
+                    <h2>{repName}</h2>
+                    <button className={classes.closeButton} onClick={handleClose}>
+                        Close
+                    </button>
+                </div>
                 <div className={classes.infoListing}>
                     <PeakItem title="Hometown:" info={getInfo(repInfo["hometown"])} />
                     <PeakItem title="Address:" info={getInfo(repInfo["address"])} />
                     <PeakItem title="Phone:" info={getInfo(repInfo["phone"])} />
                     <PeakItem title="Fax:" info={getInfo(repInfo["fax"])} />
                     <PeakItem title="Committees:" info={getInfo(repInfo["committees"])} />
-                    <PeakItem title="Legislation:" info="Information not ready" list={legislationList}/>
+                    <PeakItem title="Legislation:" info="Unavailable" list={legislationList} />
                     <PeakItem title="Education:" info={getInfo(repInfo["education"])} />
                     <PeakItem title="Politics:" info={getInfo(repInfo["politics"])} />
                     <PeakItem title="Employment:" info={getInfo(repInfo["employment"])} />

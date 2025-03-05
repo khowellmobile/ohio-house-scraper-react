@@ -2,12 +2,14 @@ import classes from "./Body.module.css";
 import { useState, useEffect } from "react";
 import HelloModal from "../HelloModal";
 import RepItem from "../RepItem";
+import MsgModal from "../MsgModal";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
     const [isFullRun, setIsFullRun] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(true);
+    const [isHelloModalOpen, setIsHelloModalOpen] = useState(true);
+    const [isMsgModalOpen, setIsMsgModalOpen] = useState(false);
     const [csvJson, setCsvJson] = useState();
     const [lockSocket, setLockSocket] = useState(false);
     const [reps, setReps] = useState({});
@@ -21,6 +23,7 @@ const Body = () => {
             setIsFullRun(false);
         } else if (command === "get_rep_names") {
             handleScraper("get_rep_names");
+            setMessages((prevMessages) => [...prevMessages, "Getting Representative Names"]);
         } else {
             console.log("Not a recognized command");
         }
@@ -58,6 +61,7 @@ const Body = () => {
                 if ("msg_type" in message) {
                     if (message["msg_type"] === "update") {
                         handleRepUpdate(message);
+                        setMessages((prevMessages) => [...prevMessages, message["msg"]]);
                     } else if (message["msg_type"] === "error") {
                         setMessages((prevMessages) => [...prevMessages, message["msg"]]);
                     } else if (message["msg_type"] === "data") {
@@ -190,9 +194,13 @@ const Body = () => {
         document.body.removeChild(link);
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
+    const handleCloseHelloModal = () => {
+        setIsHelloModalOpen(false);
     };
+
+    const handleCloseMsgModal = () => {
+        setIsMsgModalOpen(false);
+    }
 
     /** 
      * Populates reps with data when csvJson is recieved.
@@ -226,7 +234,8 @@ const Body = () => {
 
     return (
         <>
-            {isModalOpen && <HelloModal handleCloseModal={handleCloseModal} />}
+            {isHelloModalOpen && <HelloModal handleCloseModal={handleCloseHelloModal} />}
+            {isMsgModalOpen && <MsgModal handleCloseModal={handleCloseMsgModal} messages={messages}/>}
 
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
@@ -238,6 +247,9 @@ const Body = () => {
                     </button>
                     <button onClick={() => downloadReps()} disabled={isScraping}>
                         <p>Save Output</p>
+                    </button>
+                    <button onClick={() => setIsMsgModalOpen(true)}>
+                        <p>Message Log</p>
                     </button>
                     {isScraping && <div className={classes.spinner}></div>}
                 </div>

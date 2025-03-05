@@ -48,7 +48,7 @@ def get_representative_list():
 
     rep_name_divs = soup.find_all("div", class_="media-overlay-caption-text-line-1")
 
-    for div in rep_name_divs[:30]:
+    for div in rep_name_divs:
         # Use re.sub in future
         rep_names.append(
             div.text.strip().replace(" ", "-").replace(".", "").replace(",", "").lower()
@@ -123,7 +123,6 @@ def create_json_list(people_dict):
 
 
 def create_formatted_json_msg(kind, rep_name):
-    print(kind, rep_name)
     if kind == "start_rep":
         return f'{{"msg_type":"update", "rep_name":"{rep_name}", "msg":"Processing: {rep_name}"}}'
     elif kind == "finish_rep":
