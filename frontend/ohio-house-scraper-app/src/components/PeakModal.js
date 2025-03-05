@@ -26,7 +26,7 @@ const PeakModal = ({ repName, repInfo, handleCloseModal }) => {
 
     const getInfo = (field) => {
         if (field.trim() === "" || field === null) {
-            return "Information not ready";
+            return "Unavailable";
         }
 
         return field;
@@ -47,7 +47,7 @@ const PeakModal = ({ repName, repInfo, handleCloseModal }) => {
                     <PeakItem title="Phone:" info={getInfo(repInfo["phone"])} />
                     <PeakItem title="Fax:" info={getInfo(repInfo["fax"])} />
                     <PeakItem title="Committees:" info={getInfo(repInfo["committees"])} />
-                    <PeakItem title="Legislation:" info="Information not ready" list={legislationList} />
+                    <PeakItem title="Legislation:" info="Unavailable" list={legislationList} />
                     <PeakItem title="Education:" info={getInfo(repInfo["education"])} />
                     <PeakItem title="Politics:" info={getInfo(repInfo["politics"])} />
                     <PeakItem title="Employment:" info={getInfo(repInfo["employment"])} />
