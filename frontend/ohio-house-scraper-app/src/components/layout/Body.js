@@ -9,9 +9,7 @@ const Body = () => {
     const [isFullRun, setIsFullRun] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(true);
     const [csvJson, setCsvJson] = useState();
-
     const [lockSocket, setLockSocket] = useState(false);
-
     const [reps, setReps] = useState({});
 
     const handleScraperCommand = (command) => {
@@ -221,14 +219,10 @@ const Body = () => {
         }
     }, [csvJson]);
 
-    /* useEffect(() => {
-        console.log("csvJson", csvJson);
-        console.log("reps", reps);
-    }, [csvJson, reps]); */
-
+    // Will cause warning. Ignore the warning.
     useEffect(() => {
         handleScraperCommand("get_rep_names");
-    });
+    }, []); // Empty to only run on mounts
 
     return (
         <>
