@@ -196,7 +196,11 @@ const Body = () => {
         setIsModalOpen(false);
     };
 
-    /** Populates reps with data when csvJson is recieved */
+    /** 
+     * Populates reps with data when csvJson is recieved.
+     * Will cause warning since React wants reps inside dependency array but that would cause
+     * unwanted effects such as making reps match csv json anytime it is changed
+    */
     useEffect(() => {
         if (csvJson) {
             const populateReps = () => {
@@ -224,7 +228,7 @@ const Body = () => {
 
     useEffect(() => {
         handleScraperCommand("get_rep_names");
-    }, []);
+    });
 
     return (
         <>
