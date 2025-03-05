@@ -36,7 +36,7 @@ const RepItem = ({ repName, repInfo, canRefresh }) => {
 
     return (
         <>
-            {isModalOpen && <PeakModal repInfo={repInfo} handleCloseModal={handleCloseModal} />}
+            {isModalOpen && <PeakModal repName={repName} repInfo={repInfo} handleCloseModal={handleCloseModal} />}
 
             <div className={classes.mainContainer}>
                 <div className={classes.infoContainer}>
@@ -47,7 +47,6 @@ const RepItem = ({ repName, repInfo, canRefresh }) => {
                 </div>
                 <div className={classes.tools}>
                     <EyeIcon className={classes.icon} onClick={handleOpenModal}/>
-                    {canRefresh ? <RefreshIcon className={classes.icon} /> : <NoRefreshIcon className={classes.icon} />}
                 </div>
             </div>
         </>
