@@ -1,5 +1,5 @@
 import classes from "./Body.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import HelloModal from "../HelloModal";
 import RepItem from "../RepItem";
 import MsgModal from "../MsgModal";
@@ -14,10 +14,14 @@ const Body = () => {
     const [lockSocket, setLockSocket] = useState(false);
     const [reps, setReps] = useState({});
 
-    const [fieldList, setFieldList] = useState(["legislation", "committees"]);
+    const [fieldList, setFieldList] = useState([]);
 
     const handleScraperCommand = (command) => {
         if (command === "start_scraper") {
+            if (fieldList.length === 0) {
+                alert("Please select at least one field set in the Selected Fields dropdown to run scraper");
+                return;
+            }
             handleScraper("start_scraper");
         } else if (command === "get_rep_names") {
             handleScraper("get_rep_names");
@@ -199,9 +203,9 @@ const Body = () => {
         setIsMsgModalOpen(false);
     };
 
-    const matchFieldLists = (list) => {
+    const matchFieldLists = useCallback((list) => {
         setFieldList(list);
-    }
+    }, []);
 
     /**
      * Populates reps with data when csvJson is recieved.
@@ -249,7 +253,7 @@ const Body = () => {
                     <button onClick={() => setIsMsgModalOpen(true)}>
                         <p>Message Log</p>
                     </button>
-                    <FieldDropdown matchFieldLists={matchFieldLists}/>
+                    <FieldDropdown matchFieldLists={matchFieldLists} />
                     {isScraping && <div className={classes.spinner}></div>}
                 </div>
                 <div className={classes.repListing}>
