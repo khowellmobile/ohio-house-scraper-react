@@ -14,7 +14,7 @@ const Body = () => {
     const [lockSocket, setLockSocket] = useState(false);
     const [reps, setReps] = useState({});
 
-    const [fieldList, setFieldList] = useState(["legislation", "committees"])
+    const [fieldList, setFieldList] = useState(["legislation", "committees"]);
 
     const handleScraperCommand = (command) => {
         if (command === "start_scraper") {
@@ -141,43 +141,41 @@ const Body = () => {
     const downloadReps = () => {
         let headers;
 
-        if (isFullRun) {
-            headers = [
-                "Name",
-                "Hometown",
-                "Address",
-                "Phone",
-                "Fax",
-                "Education",
-                "Politics",
-                "Employment",
-                "Community",
-                "Committees",
-            ];
-        } else {
-            headers = ["Name", "Legislation", "Image", "Image_URL"];
-        }
+        headers = [
+            "Name",
+            "Hometown",
+            "Address",
+            "Phone",
+            "Fax",
+            "Education",
+            "Politics",
+            "Employment",
+            "Community",
+            "Committees",
+            "Legislation",
+            "Image",
+            "Image_URL",
+        ];
 
         let csvContent = headers.join("\t") + "\n";
 
         Object.entries(reps).forEach(([key, name]) => {
             let row;
-            if (isFullRun) {
-                row = [
-                    key,
-                    name.hometown,
-                    name.address,
-                    name.phone,
-                    name.fax,
-                    name.education,
-                    name.politics,
-                    name.employment,
-                    name.community,
-                    name.committees,
-                ].join("\t");
-            } else {
-                row = [key, name.legislation, name.image_formula, name.image_url].join("\t");
-            }
+            row = [
+                key,
+                name.hometown,
+                name.address,
+                name.phone,
+                name.fax,
+                name.education,
+                name.politics,
+                name.employment,
+                name.community,
+                name.committees,
+                name.legislation,
+                name.image_formula,
+                name.image_url,
+            ].join("\t");
 
             csvContent += row + "\n";
         });
@@ -199,13 +197,13 @@ const Body = () => {
 
     const handleCloseMsgModal = () => {
         setIsMsgModalOpen(false);
-    }
+    };
 
-    /** 
+    /**
      * Populates reps with data when csvJson is recieved.
      * Will cause warning since React wants reps inside dependency array but that would cause
      * unwanted effects such as making reps match csv json anytime it is changed
-    */
+     */
     useEffect(() => {
         if (csvJson) {
             const populateReps = () => {
@@ -234,7 +232,7 @@ const Body = () => {
     return (
         <>
             {isHelloModalOpen && <HelloModal handleCloseModal={handleCloseHelloModal} />}
-            {isMsgModalOpen && <MsgModal handleCloseModal={handleCloseMsgModal} messages={messages}/>}
+            {isMsgModalOpen && <MsgModal handleCloseModal={handleCloseMsgModal} messages={messages} />}
 
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
