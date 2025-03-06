@@ -1,26 +1,28 @@
 import classes from "./Body.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import HelloModal from "../HelloModal";
 import RepItem from "../RepItem";
 import MsgModal from "../MsgModal";
+import FieldDropdown from "../FieldDropdown";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
-    const [isFullRun, setIsFullRun] = useState(true);
     const [isHelloModalOpen, setIsHelloModalOpen] = useState(true);
     const [isMsgModalOpen, setIsMsgModalOpen] = useState(false);
     const [csvJson, setCsvJson] = useState();
     const [lockSocket, setLockSocket] = useState(false);
     const [reps, setReps] = useState({});
 
+    const [fieldList, setFieldList] = useState([]);
+
     const handleScraperCommand = (command) => {
-        if (command === "start_full_scraper") {
-            handleScraper("start_full_scraper");
-            setIsFullRun(true);
-        } else if (command === "start_partial_scraper") {
-            handleScraper("start_partial_scraper");
-            setIsFullRun(false);
+        if (command === "start_scraper") {
+            if (fieldList.length === 0) {
+                alert("Please select at least one field set in the Selected Fields dropdown to run scraper");
+                return;
+            }
+            handleScraper("start_scraper");
         } else if (command === "get_rep_names") {
             handleScraper("get_rep_names");
             setMessages((prevMessages) => [...prevMessages, "Getting Representative Names"]);
@@ -45,6 +47,7 @@ const Body = () => {
             const message = {
                 msg_type: "command",
                 msg: initial_command,
+                fields: fieldList,
             };
 
             socket.send(JSON.stringify(message));
@@ -142,43 +145,41 @@ const Body = () => {
     const downloadReps = () => {
         let headers;
 
-        if (isFullRun) {
-            headers = [
-                "Name",
-                "Hometown",
-                "Address",
-                "Phone",
-                "Fax",
-                "Education",
-                "Politics",
-                "Employment",
-                "Community",
-                "Committees",
-            ];
-        } else {
-            headers = ["Name", "Legislation", "Image", "Image_URL"];
-        }
+        headers = [
+            "Name",
+            "Hometown",
+            "Address",
+            "Phone",
+            "Fax",
+            "Education",
+            "Politics",
+            "Employment",
+            "Community",
+            "Committees",
+            "Legislation",
+            "Image",
+            "Image_URL",
+        ];
 
         let csvContent = headers.join("\t") + "\n";
 
         Object.entries(reps).forEach(([key, name]) => {
             let row;
-            if (isFullRun) {
-                row = [
-                    key,
-                    name.hometown,
-                    name.address,
-                    name.phone,
-                    name.fax,
-                    name.education,
-                    name.politics,
-                    name.employment,
-                    name.community,
-                    name.committees,
-                ].join("\t");
-            } else {
-                row = [key, name.legislation, name.image_formula, name.image_url].join("\t");
-            }
+            row = [
+                key,
+                name.hometown,
+                name.address,
+                name.phone,
+                name.fax,
+                name.education,
+                name.politics,
+                name.employment,
+                name.community,
+                name.committees,
+                name.legislation,
+                name.image_formula,
+                name.image_url,
+            ].join("\t");
 
             csvContent += row + "\n";
         });
@@ -200,13 +201,17 @@ const Body = () => {
 
     const handleCloseMsgModal = () => {
         setIsMsgModalOpen(false);
-    }
+    };
 
-    /** 
+    const matchFieldLists = useCallback((list) => {
+        setFieldList(list);
+    }, []);
+
+    /**
      * Populates reps with data when csvJson is recieved.
      * Will cause warning since React wants reps inside dependency array but that would cause
      * unwanted effects such as making reps match csv json anytime it is changed
-    */
+     */
     useEffect(() => {
         if (csvJson) {
             const populateReps = () => {
@@ -235,15 +240,12 @@ const Body = () => {
     return (
         <>
             {isHelloModalOpen && <HelloModal handleCloseModal={handleCloseHelloModal} />}
-            {isMsgModalOpen && <MsgModal handleCloseModal={handleCloseMsgModal} messages={messages}/>}
+            {isMsgModalOpen && <MsgModal handleCloseModal={handleCloseMsgModal} messages={messages} />}
 
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
-                    <button onClick={() => handleScraperCommand("start_full_scraper")} disabled={isScraping}>
-                        <p>Run Full Scraper</p>
-                    </button>
-                    <button onClick={() => handleScraperCommand("start_partial_scraper")} disabled={isScraping}>
-                        <p>Run Legislative Scraper</p>
+                    <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping}>
+                        <p>Run Scraper</p>
                     </button>
                     <button onClick={() => downloadReps()} disabled={isScraping}>
                         <p>Save Output</p>
@@ -251,6 +253,7 @@ const Body = () => {
                     <button onClick={() => setIsMsgModalOpen(true)}>
                         <p>Message Log</p>
                     </button>
+                    <FieldDropdown matchFieldLists={matchFieldLists} />
                     {isScraping && <div className={classes.spinner}></div>}
                 </div>
                 <div className={classes.repListing}>

@@ -1,0 +1,98 @@
+.mainContainer {
+    height: 2.6rem;
+    width: 10.5rem;
+
+    display: flex;
+}
+
+.title {
+    padding: 0.5rem 0 0.5rem 1rem;
+
+    background-color: rgb(41, 41, 54);
+    outline: none;
+    border: none;
+    border-radius: 0.25rem 0 0 0.25rem;
+    cursor: pointer;
+
+    transition: all ease 0.25s;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title > p {
+    color: white;
+    font-size: 1rem;
+    font-family: "poppins";
+}
+
+.dropDownArrow {
+    padding: 0 0.5rem;
+
+    background-color: rgb(41, 41, 54);
+    border-radius: 0 0.25rem 0.25rem 0;
+    cursor: pointer;
+    user-select: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dropDownArrow > p {
+    color: white;
+}
+
+.dropDown {
+    position: relative;
+}
+
+.dropDownContent {
+    width: 20rem;
+
+    background-color: white;
+    color: black;
+    border-radius: 0.25rem;
+    user-select: none;
+    outline: 1px solid rgb(216, 216, 216);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    position: absolute;
+    top: 2.6rem;
+    right: calc(-9.6rem - 1px);
+}
+
+.dropDownContent > span {
+    height: 2rem;
+    padding: 0rem 0.5rem;
+
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+}
+
+.dropDownContent > span:nth-child(1) {
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.dropDownContent > span:nth-child(5) {
+    border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.dropDownContent > span:not(:nth-child(5)) {
+    border-bottom: 1px solid rgb(216, 216, 216);
+}
+
+.dropDownContent > span:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.highlighted {
+    background-color: rgba(62, 62, 114, 0.267);
+}
