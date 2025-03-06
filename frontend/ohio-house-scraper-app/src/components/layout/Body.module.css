@@ -1,5 +1,8 @@
-.tools > button {
-    margin-right: 0.5rem;
+.tools {
+    width: 100%;
+}
+
+.tools > div > button {
     padding: 0.5rem 1rem;
 
     background-color: rgb(41, 41, 54);
@@ -11,18 +14,39 @@
     transition: all ease 0.25s;
 }
 
-.tools > button:hover {
+.tools > div > button:hover {
     transform: translateY(-1px);
 }
 
-.tools > button:active {
+.tools > div > button:active {
     transform: translateY(1px);
 }
 
-.tools > button > p {
+.tools > div > button > p {
     color: white;
     font-size: 1rem;
     font-family: "poppins";
+}
+
+.toolsLeft {
+    width: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.toolsLeft > button {
+    margin-right: 0.5rem;
+}
+
+.toolsRight {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.toolsRight > button {
+    margin-left: 0.5rem;
 }
 
 .mainContainer {

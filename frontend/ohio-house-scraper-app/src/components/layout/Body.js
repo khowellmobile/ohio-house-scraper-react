@@ -244,16 +244,20 @@ const Body = () => {
 
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
-                    <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping}>
-                        <p>Run Scraper</p>
-                    </button>
-                    <button onClick={() => downloadReps()} disabled={isScraping}>
-                        <p>Save Output</p>
-                    </button>
-                    <button onClick={() => setIsMsgModalOpen(true)}>
-                        <p>Message Log</p>
-                    </button>
-                    <FieldDropdown matchFieldLists={matchFieldLists} />
+                    <div className={classes.toolsLeft}>
+                        <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping}>
+                            <p>Run Scraper</p>
+                        </button>
+                        <FieldDropdown matchFieldLists={matchFieldLists} />
+                    </div>
+                    <div className={classes.toolsRight}>
+                        <button onClick={() => downloadReps()} disabled={isScraping}>
+                            <p>Save Output</p>
+                        </button>
+                        <button onClick={() => setIsMsgModalOpen(true)}>
+                            <p>Message Log</p>
+                        </button>
+                    </div>
                     {isScraping && <div className={classes.spinner}></div>}
                 </div>
                 <div className={classes.repListing}>
