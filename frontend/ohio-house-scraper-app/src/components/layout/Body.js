@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import HelloModal from "../HelloModal";
 import RepItem from "../RepItem";
 import MsgModal from "../MsgModal";
+import FieldDropdown from "../FieldDropdown";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
-    const [isFullRun, setIsFullRun] = useState(true);
     const [isHelloModalOpen, setIsHelloModalOpen] = useState(true);
     const [isMsgModalOpen, setIsMsgModalOpen] = useState(false);
     const [csvJson, setCsvJson] = useState();
@@ -199,6 +199,10 @@ const Body = () => {
         setIsMsgModalOpen(false);
     };
 
+    const matchFieldLists = (list) => {
+        setFieldList(list);
+    }
+
     /**
      * Populates reps with data when csvJson is recieved.
      * Will cause warning since React wants reps inside dependency array but that would cause
@@ -237,10 +241,7 @@ const Body = () => {
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
                     <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping}>
-                        <p>Run Full Scraper</p>
-                    </button>
-                    <button onClick={() => handleScraperCommand("start_partial_scraper")} disabled={isScraping}>
-                        <p>Run Legislative Scraper</p>
+                        <p>Run Scraper</p>
                     </button>
                     <button onClick={() => downloadReps()} disabled={isScraping}>
                         <p>Save Output</p>
@@ -248,6 +249,7 @@ const Body = () => {
                     <button onClick={() => setIsMsgModalOpen(true)}>
                         <p>Message Log</p>
                     </button>
+                    <FieldDropdown matchFieldLists={matchFieldLists}/>
                     {isScraping && <div className={classes.spinner}></div>}
                 </div>
                 <div className={classes.repListing}>
