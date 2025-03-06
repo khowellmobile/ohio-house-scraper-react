@@ -29,8 +29,7 @@ import json
 import queue
 import logging
 
-from houseScraper_async_full import run_scraper as run_scraper_full
-from houseScraper_async_partial import run_scraper as run_scraper_partial
+from houseScraper_async import run_scraper as run_scraper
 from utils import get_representative_list
 
 
@@ -52,13 +51,9 @@ async def receive_from_frontend(websocket):
 
             msg_json = json.loads(message)
 
-            if msg_json["msg_type"] == "command" and msg_json["msg"] == "start_full_scraper":
-                print("Starting scraper...")
-                asyncio.create_task(run_scraper_handler(websocket, True))
-                await send_to_frontend(websocket)
-            elif msg_json["msg_type"] == "command" and msg_json["msg"] == "start_partial_scraper":
-                print("Starting scraper...")
-                asyncio.create_task(run_scraper_handler(websocket, False))
+            if msg_json["msg_type"] == "command" and msg_json["msg"] == "start_scraper":
+                fields = [field.strip() for field in msg_json["fields"]]
+                asyncio.create_task(run_scraper_handler(websocket, fields))
                 await send_to_frontend(websocket)
             elif msg_json["msg_type"] == "command" and msg_json["msg"] == "get_rep_names":
                 names = json.dumps(get_representative_list())
@@ -132,7 +127,7 @@ async def sendJson(websocket, people_json):
     print("WebSocket Closed", "132")
 
 
-async def run_scraper_handler(websocket, run_full):
+async def run_scraper_handler(websocket, fields):
     """
     Run the scraper and sends progress updates to the frontend.
 
@@ -144,10 +139,7 @@ async def run_scraper_handler(websocket, run_full):
         to the frontend used to communicate to the front end.
     """
     try:
-        if run_full:
-            await run_scraper_full(add_to_ui_queue, sendJson, websocket)
-        else:
-            await run_scraper_partial(add_to_ui_queue, sendJson, websocket)
+        await run_scraper(fields, add_to_ui_queue, sendJson, websocket)
         add_to_ui_queue('{"msg_type": "update", "msg": "Finished from websocket"}')
     except Exception as e:
         # Log the error and notify the client if error occurs
