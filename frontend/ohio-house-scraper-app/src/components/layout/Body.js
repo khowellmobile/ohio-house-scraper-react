@@ -14,13 +14,11 @@ const Body = () => {
     const [lockSocket, setLockSocket] = useState(false);
     const [reps, setReps] = useState({});
 
+    const [fieldList, setFieldList] = useState(["legislation", "committees"])
+
     const handleScraperCommand = (command) => {
-        if (command === "start_full_scraper") {
-            handleScraper("start_full_scraper");
-            setIsFullRun(true);
-        } else if (command === "start_partial_scraper") {
-            handleScraper("start_partial_scraper");
-            setIsFullRun(false);
+        if (command === "start_scraper") {
+            handleScraper("start_scraper");
         } else if (command === "get_rep_names") {
             handleScraper("get_rep_names");
             setMessages((prevMessages) => [...prevMessages, "Getting Representative Names"]);
@@ -45,6 +43,7 @@ const Body = () => {
             const message = {
                 msg_type: "command",
                 msg: initial_command,
+                fields: fieldList,
             };
 
             socket.send(JSON.stringify(message));
@@ -239,7 +238,7 @@ const Body = () => {
 
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
-                    <button onClick={() => handleScraperCommand("start_full_scraper")} disabled={isScraping}>
+                    <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping}>
                         <p>Run Full Scraper</p>
                     </button>
                     <button onClick={() => handleScraperCommand("start_partial_scraper")} disabled={isScraping}>

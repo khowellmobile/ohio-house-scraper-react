@@ -52,8 +52,8 @@ async def receive_from_frontend(websocket):
             msg_json = json.loads(message)
 
             if msg_json["msg_type"] == "command" and msg_json["msg"] == "start_scraper":
-                fields = [field.strip() for field in msg_json["fields"].split(",")]
-                asyncio.create_task(run_scraper_handler(websocket, True))
+                fields = [field.strip() for field in msg_json["fields"]]
+                asyncio.create_task(run_scraper_handler(websocket, fields))
                 await send_to_frontend(websocket)
             elif msg_json["msg_type"] == "command" and msg_json["msg"] == "get_rep_names":
                 names = json.dumps(get_representative_list())

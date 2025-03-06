@@ -278,18 +278,18 @@ async def process_rep(
 
     # Create a dictionary of available tasks with corresponding functions
     task_mapping = {
-        "legislation": get_legislation(session, rep_name, add_to_ui_queue, error_queue),
-        "image_url": get_image_url(session, rep_name, add_to_ui_queue, error_queue),
-        "info": get_info(session, rep_name, add_to_ui_queue, error_queue),
-        "bio": get_bio(session, rep_name, add_to_ui_queue, error_queue),
-        "committees": get_committees(session, rep_name, add_to_ui_queue, error_queue),
+        "legislation": get_legislation,
+        "image_url": get_image_url,
+        "info": get_info,
+        "bio": get_bio,
+        "committees": get_committees,
     }
 
     # Filter the tasks based on the fields provided in the list
     tasks_to_run = []
     for field in fields:
         if field in task_mapping:
-            tasks_to_run.append(task_mapping[field])
+             tasks_to_run.append(task_mapping[field](session, rep_name, add_to_ui_queue, error_queue))
 
     # Run only the selected tasks concurrently
     add_to_ui_queue(create_formatted_json_msg("start_rep", rep_name))
