@@ -1,9 +1,9 @@
 import classes from "./Body.module.css";
 import { useState, useEffect, useCallback } from "react";
-import HelloModal from "../HelloModal";
-import RepItem from "../RepItem";
-import MsgModal from "../MsgModal";
-import FieldDropdown from "../FieldDropdown";
+import HelloModal from "./modals/HelloModal";
+import RepItem from "./items/RepItem";
+import MsgModal from "./modals/MsgModal";
+import FieldDropdown from "./FieldDropdown";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
@@ -107,6 +107,8 @@ const Body = () => {
 
             setReps((prevReps) => {
                 const updatedReps = { ...prevReps };
+
+                console.log(status_mode);
 
                 if (updatedReps[message["rep_name"]]) {
                     updatedReps[message["rep_name"]] = {

@@ -1,5 +1,5 @@
 import classes from "./PeakItem.module.css";
-import { ReactComponent as CopyIcon } from "../assets/svgs/copy-icon.svg";
+import { ReactComponent as CopyIcon } from "../../assets/svgs/copy-icon.svg";
 import { useEffect, useState } from "react";
 
 const PeakItem = ({ title, info, list }) => {
