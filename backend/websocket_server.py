@@ -132,7 +132,7 @@ def add_to_ui_queue(text):
     Args:
         text: The message to be added to the queue
     """
-
+    
     print_queue.put(text + "\n")
 
 

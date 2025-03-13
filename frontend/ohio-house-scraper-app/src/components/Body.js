@@ -98,6 +98,8 @@ const Body = () => {
 
     const handleRepUpdate = (message) => {
         let status_mode;
+
+        console.log(message)
         if ("rep_name" in message) {
             if (message["msg"].includes("Finished")) {
                 status_mode = "checked";
