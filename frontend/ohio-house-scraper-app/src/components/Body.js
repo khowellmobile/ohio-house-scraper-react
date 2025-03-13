@@ -99,7 +99,6 @@ const Body = () => {
     const handleRepUpdate = (message) => {
         let status_mode;
 
-        console.log(message)
         if ("rep_name" in message) {
             if (message["msg"].includes("Finished")) {
                 status_mode = "checked";
@@ -109,8 +108,6 @@ const Body = () => {
 
             setReps((prevReps) => {
                 const updatedReps = { ...prevReps };
-
-                console.log(status_mode);
 
                 if (updatedReps[message["rep_name"]]) {
                     updatedReps[message["rep_name"]] = {
@@ -253,6 +250,7 @@ const Body = () => {
                             <p>Run Scraper</p>
                         </button>
                         <FieldDropdown matchFieldLists={matchFieldLists} />
+                        {isScraping && <div className={classes.spinner}></div>}
                     </div>
                     <div className={classes.toolsRight}>
                         <button onClick={() => downloadReps()} disabled={isScraping}>
@@ -262,7 +260,6 @@ const Body = () => {
                             <p>Message Log</p>
                         </button>
                     </div>
-                    {isScraping && <div className={classes.spinner}></div>}
                 </div>
                 <div className={classes.repListing}>
                     {Object.entries(reps).map(([key, repInfo], index) => (
