@@ -6,6 +6,7 @@ import queue
 import os
 import re
 from dotenv import load_dotenv  # type: ignore
+import time
 
 from utils import (
     get_representative_list,
@@ -21,6 +22,11 @@ api_key = os.getenv("API_KEY")
 
 API_KEY = api_key
 client = genai.Client(api_key=API_KEY)
+
+# Global Time variables to handle request delays
+last_request_time = 0
+REQUEST_DELAY = 0.85
+request_lock = asyncio.Lock()
 
 
 # Asynchronous fetch for getting html content
@@ -38,13 +44,27 @@ async def fetch_data(session, url):
     Returns:
         str: The HTML content of the page or None if the request fails.
     """
-    async with session.get(url) as response:
 
-        if await checkURLResponse(response) != 0:
-            print(f"Error: Received a non-200 status code {response.status} for {url}")
-            return None
+    global last_request_time
 
-        return await response.text()
+    async with request_lock:
+        current_time = time.time()
+        elapsed_time = current_time - last_request_time
+
+        if elapsed_time < REQUEST_DELAY:
+            await asyncio.sleep(REQUEST_DELAY - elapsed_time)
+
+        async with session.get(url) as response:
+            last_request_time = time.time()
+
+            if await checkURLResponse(response) != 0:
+                print(
+                    f"Error: Received a non-200 status code {response.status} for {url}"
+                )
+                return None
+
+            # Return the response text
+            return await response.text()
 
 
 # Fetch representative information
@@ -289,7 +309,9 @@ async def process_rep(
     tasks_to_run = []
     for field in fields:
         if field in task_mapping:
-             tasks_to_run.append(task_mapping[field](session, rep_name, add_to_ui_queue, error_queue))
+            tasks_to_run.append(
+                task_mapping[field](session, rep_name, add_to_ui_queue, error_queue)
+            )
 
     # Run only the selected tasks concurrently
     add_to_ui_queue(create_formatted_json_msg("start_rep", rep_name))
@@ -304,16 +326,25 @@ async def process_rep(
         elif field == "image_url":
             rep_obj["image_formula"], rep_obj["image_url"] = results[result_index]
         elif field == "info":
-            rep_obj["hometown"], rep_obj["address"], rep_obj["phone"], rep_obj["fax"] = results[result_index]
+            (
+                rep_obj["hometown"],
+                rep_obj["address"],
+                rep_obj["phone"],
+                rep_obj["fax"],
+            ) = results[result_index]
         elif field == "bio":
-            rep_obj["education"], rep_obj["politics"], rep_obj["employment"], rep_obj["community"] = results[result_index]
+            (
+                rep_obj["education"],
+                rep_obj["politics"],
+                rep_obj["employment"],
+                rep_obj["community"],
+            ) = results[result_index]
         elif field == "committees":
             rep_obj["committees"] = results[result_index]
         result_index += 1
 
     # Put the results into the result_queue
     result_queue.put({rep_name: rep_obj})
-
 
 
 # Process a batch of representatives concurrently
@@ -346,8 +377,8 @@ async def process_batch(
         )
         tasks.append(task)
 
-        # Sleep to avoid resource exhaustion errors
-        await asyncio.sleep(3)
+        """ # Sleep to avoid resource exhaustion errors
+        await asyncio.sleep(4) """
 
     await asyncio.gather(*tasks)
 
@@ -388,7 +419,9 @@ async def create_run_batches(
 
         # Start the batch processing in a new task
         task = asyncio.create_task(
-            process_batch(session, batch, fields, add_to_ui_queue, result_queue, error_queue)
+            process_batch(
+                session, batch, fields, add_to_ui_queue, result_queue, error_queue
+            )
         )
         tasks.append(task)
 
@@ -443,7 +476,12 @@ async def run_scraper(fields, add_to_ui_queue, sendJson, websocket):
         while not error_queue.empty():
             await asyncio.sleep(4)
             await process_rep(
-                session, error_queue.get(), fields, add_to_ui_queue, result_queue, error_queue
+                session,
+                error_queue.get(),
+                fields,
+                add_to_ui_queue,
+                result_queue,
+                error_queue,
             )
 
         # Adding corrected reps to peeople

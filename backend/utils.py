@@ -48,7 +48,7 @@ def get_representative_list():
 
     rep_name_divs = soup.find_all("div", class_="media-overlay-caption-text-line-1")
 
-    for div in rep_name_divs[:30]:
+    for div in rep_name_divs:
         # Use re.sub in future
         rep_names.append(
             div.text.strip().replace(" ", "-").replace(".", "").replace(",", "").lower()

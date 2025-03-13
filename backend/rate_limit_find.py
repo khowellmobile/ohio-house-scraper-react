@@ -101,7 +101,7 @@ def loop_until_fail(url):
 
 
 def manual_test(url, batch_size, batch_delay):
-    for batch in range(10):
+    for batch in range(500):
         print(f"Running batch {batch + 1}...")
 
         for i in range(batch_size):
@@ -130,7 +130,7 @@ def main():
 
     print(data) """
 
-    if manual_test(url, 5, 3.25):
+    if manual_test(url, 1, 0.8):
         print("stable")
     else:
         print("Nope")
