@@ -1,5 +1,15 @@
-button {
-    margin-right: 0.5rem;
+.tools {
+    width: 100%;
+    height: 10%;
+    padding: .5rem 0.5rem;
+
+    background-color: rgb(207, 207, 207);
+
+    display: flex;
+    align-items: center;
+}
+
+.tools > div > button {
     padding: 0.5rem 1rem;
 
     background-color: rgb(41, 41, 54);
@@ -11,18 +21,39 @@ button {
     transition: all ease 0.25s;
 }
 
-button:hover {
+.tools > div > button:hover {
     transform: translateY(-1px);
 }
 
-button:active {
+.tools > div > button:active {
     transform: translateY(1px);
 }
 
-button > p {
+.tools > div > button > p {
     color: white;
     font-size: 1rem;
     font-family: "poppins";
+}
+
+.toolsLeft {
+    width: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.toolsLeft > button {
+    margin-right: 0.5rem;
+}
+
+.toolsRight {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.toolsRight > button {
+    margin-left: 0.5rem;
 }
 
 .mainContainer {
@@ -33,41 +64,29 @@ button > p {
     flex-direction: column;
 }
 
-.tools {
+.repListing {
     width: 100%;
-    height: 10%;
-    padding: .55rem 1rem;
-
-    background-color: rgb(207, 207, 207);
-
-    display: flex;
-    align-items: center;
-}
-
-.outputContainer {
-    width: 100%;
-    height: 90%;
-    padding: 0 1rem 1rem 1rem;
-}
-
-.outputHeader {
-    height: 2rem;
-}
-
-.outputHeader > h2 {
-    font-weight: 400;
-}
-
-.output {
-    width: 100%;
-    height: calc(100% - 2rem);
+    height: 100%;
     padding: 0.5rem;
 
-    border-radius: 0.25rem;
-    overflow: scroll;
-    outline: 1px solid rgb(185, 185, 185);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+
+    gap: 0.5rem;
 }
 
-.output::-webkit-scrollbar {
-    display: none;
-}
+.spinner {
+    border: .25rem solid rgb(120, 120, 143);
+    border-top: .25rem solid rgb(41, 41, 54); 
+    border-bottom: .25rem solid rgb(41, 41, 54); 
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    animation: spin 2s linear infinite;
+  }
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

@@ -1,28 +1,44 @@
 import classes from "./Body.module.css";
-import { useState, useEffect, useRef } from "react";
-import HelloModal from "./HelloModal";
+import { useState, useEffect, useCallback } from "react";
+import HelloModal from "./modals/HelloModal";
+import RepItem from "./items/RepItem";
+import MsgModal from "./modals/MsgModal";
+import FieldDropdown from "./FieldDropdown";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
+    const [isHelloModalOpen, setIsHelloModalOpen] = useState(true);
+    const [isMsgModalOpen, setIsMsgModalOpen] = useState(false);
     const [csvJson, setCsvJson] = useState();
-    const [isFullRun, setIsFullRun] = useState(true);
+    const [lockSocket, setLockSocket] = useState(false);
+    const [reps, setReps] = useState({});
 
-    const [isModalOpen, setIsModalOpen] = useState(true);
+    const [fieldList, setFieldList] = useState([]);
 
-    const scrollRef = useRef(null);
-
-    const handleScraperCommand = (isFull) => {
-        if (isFull) {
-            handleScraper("start_full_scraper");
-            setIsFullRun(true);
+    const handleScraperCommand = (command) => {
+        if (command === "start_scraper") {
+            if (fieldList.length === 0) {
+                alert("Please select at least one field set in the Selected Fields dropdown to run scraper");
+                return;
+            }
+            handleScraper("start_scraper");
+        } else if (command === "get_rep_names") {
+            handleScraper("get_rep_names");
+            setMessages((prevMessages) => [...prevMessages, "Getting Representative Names"]);
         } else {
-            handleScraper("start_partial_scraper");
-            setIsFullRun(false);
+            console.log("Not a recognized command");
         }
     };
 
     const handleScraper = (initial_command) => {
+        if (lockSocket) {
+            console.log("Web Socket currently in use. Wait a few minutes.");
+            return;
+        }
+
+        setLockSocket(true);
+
         const socket = new WebSocket("ws://localhost:65432");
 
         socket.onopen = () => {
@@ -31,6 +47,7 @@ const Body = () => {
             const message = {
                 msg_type: "command",
                 msg: initial_command,
+                fields: fieldList,
             };
 
             socket.send(JSON.stringify(message));
@@ -46,9 +63,12 @@ const Body = () => {
 
                 if ("msg_type" in message) {
                     if (message["msg_type"] === "update") {
+                        handleRepUpdate(message);
                         setMessages((prevMessages) => [...prevMessages, message["msg"]]);
                     } else if (message["msg_type"] === "error") {
                         setMessages((prevMessages) => [...prevMessages, message["msg"]]);
+                    } else if (message["msg_type"] === "data") {
+                        initializeReps(message["msg"]);
                     }
                 } else {
                     setCsvJson(message);
@@ -68,6 +88,7 @@ const Body = () => {
             console.log("Disconnected from WebSocket server");
             setMessages((prevMessages) => [...prevMessages, "Closing WebSocket"]);
             setIsScraping(false);
+            setLockSocket(false);
         };
 
         return () => {
@@ -75,64 +96,97 @@ const Body = () => {
         };
     };
 
-    useEffect(() => {
-        const container = scrollRef.current;
-        container.scrollTop = container.scrollHeight;
-    }, [messages]);
+    const handleRepUpdate = (message) => {
+        let status_mode;
 
-    useEffect(() => {
-        if (csvJson) {
-            console.log(csvJson);
+        console.log(message)
+        if ("rep_name" in message) {
+            if (message["msg"].includes("Finished")) {
+                status_mode = "checked";
+            } else {
+                status_mode = "pen";
+            }
+
+            setReps((prevReps) => {
+                const updatedReps = { ...prevReps };
+
+                console.log(status_mode);
+
+                if (updatedReps[message["rep_name"]]) {
+                    updatedReps[message["rep_name"]] = {
+                        ...updatedReps[message["rep_name"]],
+                        status: status_mode,
+                    };
+                }
+
+                return updatedReps;
+            });
         }
-    }, [csvJson]);
+    };
 
-    const convertJsonToCSV = (csvJson) => {
+    const initializeReps = (names) => {
+        const newReps = {};
+        names.forEach((name) => {
+            newReps[name] = {
+                hometown: "",
+                address: "",
+                phone: "",
+                fax: "",
+                education: "",
+                politics: "",
+                employment: "",
+                community: "",
+                committees: "",
+                legislation: "",
+                image_formula: "",
+                image_url: "",
+                status: "question",
+            };
+        });
+        setReps(newReps);
+    };
+
+    const downloadReps = () => {
         let headers;
 
-        if (isFullRun) {
-            headers = [
-                "Name",
-                "Hometown",
-                "Address",
-                "Phone",
-                "Fax",
-                "Education",
-                "Politics",
-                "Employment",
-                "Community",
-                "Committees",
-            ];
-        } else {
-            headers = ["Name", "Legislation", "Image", "Image_URL"];
-        }
+        headers = [
+            "Name",
+            "Hometown",
+            "Address",
+            "Phone",
+            "Fax",
+            "Education",
+            "Politics",
+            "Employment",
+            "Community",
+            "Committees",
+            "Legislation",
+            "Image",
+            "Image_URL",
+        ];
 
         let csvContent = headers.join("\t") + "\n";
 
-        for (const key in csvJson) {
-            if (csvJson.hasOwnProperty(key)) {
-                const person = csvJson[key];
-                let row;
+        Object.entries(reps).forEach(([key, name]) => {
+            let row;
+            row = [
+                key,
+                name.hometown,
+                name.address,
+                name.phone,
+                name.fax,
+                name.education,
+                name.politics,
+                name.employment,
+                name.community,
+                name.committees,
+                name.legislation,
+                name.image_formula,
+                name.image_url,
+            ].join("\t");
 
-                if (isFullRun) {
-                    row = [
-                        key,
-                        person.hometown,
-                        person.address,
-                        person.phone,
-                        person.fax,
-                        person.education,
-                        person.politics,
-                        person.employment,
-                        person.community,
-                        person.committees,
-                    ].join("\t");
-                } else {
-                    row = [key, person.legislation, person.image_formula, person.image_url].join("\t");
-                }
-
-                csvContent += row + "\n";
-            }
-        }
+            csvContent += row + "\n";
+        });
 
         const blob = new Blob([csvContent], { type: "text/plain" });
 
@@ -143,39 +197,77 @@ const Body = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
-        console.log(csvJson);
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
+    const handleCloseHelloModal = () => {
+        setIsHelloModalOpen(false);
     };
+
+    const handleCloseMsgModal = () => {
+        setIsMsgModalOpen(false);
+    };
+
+    const matchFieldLists = useCallback((list) => {
+        setFieldList(list);
+    }, []);
+
+    /**
+     * Populates reps with data when csvJson is recieved.
+     * Will cause warning since React wants reps inside dependency array but that would cause
+     * unwanted effects such as making reps match csv json anytime it is changed
+     */
+    useEffect(() => {
+        if (csvJson) {
+            const populateReps = () => {
+                Object.entries(csvJson).forEach(([name, person]) => {
+                    if (reps[name]) {
+                        setReps((prevReps) => ({
+                            ...prevReps,
+                            [name]: {
+                                ...prevReps[name],
+                                ...person,
+                            },
+                        }));
+                    }
+                });
+            };
+
+            populateReps();
+        }
+    }, [csvJson]);
+
+    // Will cause warning. Ignore the warning.
+    useEffect(() => {
+        handleScraperCommand("get_rep_names");
+    }, []); // Empty to only run on mounts
 
     return (
         <>
-            {isModalOpen && <HelloModal handleCloseModal={handleCloseModal} />}
+            {isHelloModalOpen && <HelloModal handleCloseModal={handleCloseHelloModal} />}
+            {isMsgModalOpen && <MsgModal handleCloseModal={handleCloseMsgModal} messages={messages} />}
 
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
-                    <button onClick={() => handleScraperCommand(true)} disabled={isScraping}>
-                        <p>Run Full Scraper</p>
-                    </button>
-                    <button onClick={() => handleScraperCommand(false)} disabled={isScraping}>
-                        <p>Run Legislative Scraper</p>
-                    </button>
-                    <button onClick={() => convertJsonToCSV(csvJson)} disabled={isScraping}>
-                        <p>Save Output</p>
-                    </button>
+                    <div className={classes.toolsLeft}>
+                        <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping}>
+                            <p>Run Scraper</p>
+                        </button>
+                        <FieldDropdown matchFieldLists={matchFieldLists} />
+                    </div>
+                    <div className={classes.toolsRight}>
+                        <button onClick={() => downloadReps()} disabled={isScraping}>
+                            <p>Save Output</p>
+                        </button>
+                        <button onClick={() => setIsMsgModalOpen(true)}>
+                            <p>Message Log</p>
+                        </button>
+                    </div>
+                    {isScraping && <div className={classes.spinner}></div>}
                 </div>
-                <div className={classes.outputContainer}>
-                    <div className={classes.outputHeader}>
-                        <h2>Status:</h2>
-                    </div>
-                    <div className={classes.output} ref={scrollRef}>
-                        {messages.map((message, index) => (
-                            <p key={index}>{message}</p>
-                        ))}
-                    </div>
+                <div className={classes.repListing}>
+                    {Object.entries(reps).map(([key, repInfo], index) => (
+                        <RepItem key={index} repName={key} repInfo={repInfo} />
+                    ))}
                 </div>
             </div>
         </>
