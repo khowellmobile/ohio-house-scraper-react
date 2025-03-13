@@ -1,4 +1,4 @@
-""" 
+"""
 Ohio House Representatives Scraper Web Socket Server
 
 This script handles creation and regulation of the websocket used for communicating
@@ -6,6 +6,7 @@ between the frontend and backend of the scraper. This file also handles communic
 The scraper itself and this file.
 
 Functions:
+    async def receive_from_frontend(websocket): Gets messages from front end to receive commands
     async def send_to_frontend(websocket): Sends messages to the front end from print_queue
     def add_to_ui_queue(text): Add messages to the print_queue (used as callback)
     async def sendJson(websocket, people_json): Sends final message to frontend and closes websocket
@@ -14,13 +15,24 @@ Functions:
     async def start_server(): Starts the WebSocket server to listen for connections and handle scraping.
 
 Libraries:
-    asyncio: handles async functions
-    websockets: communication with front end
-    json: formatting of data
-    queue: used for holding messages for frontend
+    asyncio: handles async functions.
+    websockets: communication with front end.
+    json: formatting of data.
+    queue: used for holding messages for frontend.
+    loggin: used to log the scraper runs for debugging.
+
+Imports:
+    houseScraper_async.py
+        run_scraper: Used to start the scraper.
+    utils.py
+        get_representative_list: Used to get complete list of representatives.
+
+Global Variables:
+    print_queue: Holds messages to be sent to the front end.
 
 Author: Kent Howell [khowellmobile@gmail.com]
 Date: 2/18/2025
+Last Update: 3/13/2025
 """
 
 import asyncio
@@ -45,6 +57,16 @@ logging.basicConfig(
 
 
 async def receive_from_frontend(websocket):
+    """
+    Gets messages in json format from the front end
+
+    Continuously waits for messages from the front end via the websocket. Once
+    it gets a message it will handle the command properly
+
+    Args:
+        websocket (websockets.WebSocketClientProtocol): The WebSocket connection
+        to the frontend.
+    """
     while True:
         try:
             message = await websocket.recv()
@@ -55,12 +77,13 @@ async def receive_from_frontend(websocket):
                 fields = [field.strip() for field in msg_json["fields"]]
                 asyncio.create_task(run_scraper_handler(websocket, fields))
                 await send_to_frontend(websocket)
-            elif msg_json["msg_type"] == "command" and msg_json["msg"] == "get_rep_names":
+            elif (
+                msg_json["msg_type"] == "command" and msg_json["msg"] == "get_rep_names"
+            ):
                 names = json.dumps(get_representative_list())
                 json_return_msg = f'{{"msg_type":"data", "msg":{names}}}'
                 await websocket.send(json_return_msg)
                 await websocket.close()
-
 
         except websockets.exceptions.ConnectionClosed:
             # If the connection is closed, stop listening for messages

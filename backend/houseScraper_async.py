@@ -1,3 +1,59 @@
+"""
+Ohio House Representatives Scraper
+
+This script handles scraping the OhioHouse.gov website for information about the representatives.
+The list of rep names are split into batches of 15 that are then run concurrently. A batch is started
+every 60 seconds. Updates are sent to the front end throughout scraping.
+
+Functions:
+    async def fetch_data(session, url): Fetches HTML content for a given URL asynchronously.
+    async def get_info(session, rep_name, add_to_ui_queue, error_queue): Fetches representative
+        information (hometown, address, phone, fax).
+    async def get_bio(session, rep_name, add_to_ui_queue, error_queue): Fetches representative biography
+        details and process using AI.
+    async def get_committees(session, rep_name, add_to_ui_queue, error_queue): Fetches representative
+        committee memberships.
+    async def get_legislation(session, rep_name, add_to_ui_queue, error_queue): Fetches representatives
+        primary sponsered legislation
+    async def get_image_url(session, rep_name, add_to_ui_queue, error_queue): Fetches representatives
+        headshot
+    async def process_rep(session, rep_name, fields, add_to_ui_queue, result_queue, error_queue): Processes each
+        representative's data concurrently.
+    async def process_batch(session, batch, fields, add_to_ui_queue, result_queue, error_queue): Process a batch
+        of representatives concurrently.
+    async def create_run_batches(rep_names, fields, batch_size, add_to_ui_queue, result_queue, error_queue, session):
+        Splits the representative list into batches and process each batch sequentially.
+    async def run_scraper(fields, add_to_ui_queue, sendJson, websocket): Main function to run the scraper and
+        send the results to the frontend.
+
+Libraries:
+    asyncio: handles async functions
+    aiohttp: handles async requests
+    BeautifulSoup: Helps format scraped pages
+    queue: Used for holding messages for frontend
+    os, load_dontenv: Used for environment variables
+    re: Used for pattern matching
+    time: Used for delaying requests
+
+Imports:
+    utils.py
+        get_representative_list: Used to get complete list of representatives
+        get_ai_prompt: Gets AI prompt to be used in getBio
+        create_formatted_json_msg: Used to format json messages
+        checkURLResponse: Used to check the response_code for error handling
+        create_json_list: Used to change python dictionary into json list
+
+Global Variables:
+    last_request_time: time the last request was sent
+    REQUEST_DELAY: delay between requests
+    request_lock: asyncio lock used for delaying requests
+
+
+Author: Kent Howell [khowellmobile@gmail.com]
+Created Date: 2/18/2025
+Last Update: 3/13/2025
+"""
+
 import asyncio
 import aiohttp  # type: ignore
 from bs4 import BeautifulSoup  # type: ignore
@@ -36,6 +92,8 @@ async def fetch_data(session, url):
 
     Sends a GET request to the URL, checks the response status, and returns
     the HTML content if successful. Returns None if the response is not valid.
+
+    Uses a Asyncio lock to make sure requests are spaced 0.85s apart
 
     Args:
         session (aiohttp.ClientSession): The aiohttp session used for sending requests.
@@ -211,6 +269,20 @@ async def get_committees(session, rep_name, add_to_ui_queue, error_queue):
 
 # Fetch primary legislation
 async def get_legislation(session, rep_name, add_to_ui_queue, error_queue):
+    """
+    Fetch representative primary legislations.
+
+    Scrapes the representative's legislations and returns a list of their primary legilsations.
+
+    Args:
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+        rep_name (str): The name of the representative whose legislation info is being fetched.
+        add_to_ui_queue (function): A function to send updates to the frontend.
+        error_queue (queue.Queue): A queue to store names of representatives with errors.
+
+    Returns:
+        str: A list of legislation the representative sponsors in a <newline> delimited list.
+    """
     url = f"https://ohiohouse.gov/members/{rep_name}/legislation"
     response = await fetch_data(session, url)
 
@@ -248,6 +320,20 @@ async def get_legislation(session, rep_name, add_to_ui_queue, error_queue):
 
 # Fetch reps headshot image
 async def get_image_url(session, rep_name, add_to_ui_queue, error_queue):
+    """
+    Fetch the repsentatives headshot and create an excel formula.
+
+    Scrapes the representative's headshot link and inserts it into a formula.
+
+    Args:
+        session (aiohttp.ClientSession): The aiohttp session used for sending requests.
+        rep_name (str): The name of the representative whose legislation info is being fetched.
+        add_to_ui_queue (function): A function to send updates to the frontend.
+        error_queue (queue.Queue): A queue to store names of representatives with errors.
+
+    Returns:
+        tuple: excel image formula, headshot link.
+    """
     url = f"https://ohiohouse.gov/members/directory?start=1&sort=LastName"
     response = await fetch_data(session, url)
 
