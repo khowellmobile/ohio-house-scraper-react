@@ -20,6 +20,7 @@ Libraries:
     json: formatting of data.
     queue: used for holding messages for frontend.
     loggin: used to log the scraper runs for debugging.
+    time: used to delay to make sure all messages have been sent
 
 Imports:
     houseScraper_async.py
@@ -40,6 +41,7 @@ import websockets  # type: ignore
 import json
 import queue
 import logging
+import time
 
 from houseScraper_async import run_scraper as run_scraper
 from utils import get_representative_list
@@ -132,14 +134,14 @@ def add_to_ui_queue(text):
     Args:
         text: The message to be added to the queue
     """
-    
+
     print_queue.put(text + "\n")
 
 
 async def sendJson(websocket, people_json):
     """
-    Sends one final message to the front via a websocket and
-    closes the websocket
+    Sends one final message to the front via a websocket, waits a delay, then
+    the websocket
 
     Args:
         websocket (websockets.WebSocketClientProtocol): The WebSocket connection
@@ -147,6 +149,7 @@ async def sendJson(websocket, people_json):
         people_json: The message to be sent. Should be in json format.
     """
     await websocket.send(people_json)
+    time.sleep(3)
     await websocket.close()
     print("WebSocket Closed", "132")
 
