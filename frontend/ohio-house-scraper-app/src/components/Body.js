@@ -40,8 +40,8 @@ const Body = () => {
         setLockSocket(true);
 
         
-        /* const socket = new WebSocket("ws://3.146.35.114:65432"); */
-        const socket = new WebSocket("ws://localhost:65432");
+        
+        const socket = new WebSocket("ws://localhost:50000");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");

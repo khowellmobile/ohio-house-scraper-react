@@ -1,11 +1,13 @@
 .mainContainer {
     height: 2.6rem;
     width: 10.5rem;
+    margin-right: 0.5rem;
 
     display: flex;
 }
 
 .title {
+    width: 85%;
     padding: 0.5rem 0 0.5rem 1rem;
 
     background-color: rgb(41, 41, 54);
@@ -28,6 +30,7 @@
 }
 
 .dropDownArrow {
+    width: 15%;
     padding: 0 0.5rem;
 
     background-color: rgb(41, 41, 54);
@@ -38,6 +41,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    position: relative;
+    right: 1px;
 }
 
 .dropDownArrow > p {
