@@ -6,7 +6,7 @@
     display: flex;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .mainContainer {
         width: calc(98%);
         height: 1.5rem;
@@ -31,7 +31,7 @@
     align-items: center;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .title {
         padding: 0.25rem;
     }
@@ -43,12 +43,11 @@
     font-family: "poppins";
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .title > p {
         font-size: 0.9rem;
     }
 }
-
 
 .dropDownArrow {
     width: 15%;
@@ -67,23 +66,21 @@
     right: 1px;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .dropDownArrow {
         padding: 0 0.25rem;
     }
 }
 
-
 .dropDownArrow > p {
     color: white;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .dropDownArrow > p {
         font-size: 0.9rem;
     }
 }
-
 
 .dropDown {
     position: relative;
@@ -103,8 +100,15 @@
     justify-content: space-between;
 
     position: absolute;
-    top: 2.6rem;
-    right: calc(-9.6rem - 1px);
+    top: calc(2.6rem + 1px);
+    right: calc(-9.6rem + 1px);
+}
+
+@media (max-width: 600px) {
+    .dropDownContent {
+        top: calc(1.5rem + 1px);
+        right: -0.4rem;
+    }
 }
 
 .dropDownContent > span {
