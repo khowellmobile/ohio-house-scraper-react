@@ -206,8 +206,8 @@ async def start_server():
     Initializes the WebSocket server on port 50000 and continuously listens
     for incoming connections from the frontend to manage the scraping process.
     """
-    server = await websockets.serve(handler, "localhost", 65432)
-    print("WebSocket server running on ws://0.0.0.0:50000")
+    server = await websockets.serve(handler, "localhost", 50000)
+    print("WebSocket server running on ws://0.0.0.0:65432")
     await server.wait_closed()
 
 

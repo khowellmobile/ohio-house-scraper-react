@@ -39,6 +39,8 @@ const Body = () => {
 
         setLockSocket(true);
 
+        
+        /* const socket = new WebSocket("ws://3.146.35.114:65432"); */
         const socket = new WebSocket("ws://localhost:65432");
 
         socket.onopen = () => {
