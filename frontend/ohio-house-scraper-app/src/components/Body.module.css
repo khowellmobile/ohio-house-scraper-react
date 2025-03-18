@@ -1,0 +1,159 @@
+.tools {
+    width: 100%;
+    height: 10%;
+    padding: 0.5rem 0.5rem;
+
+    background-color: rgb(207, 207, 207);
+
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .tools {
+        padding: 0rem;
+        height: 11.5%;
+        padding: 0.5rem;
+    }
+}
+
+.tools > div > button {
+    padding: 0.5rem 1rem;
+
+    background-color: rgb(41, 41, 54);
+    outline: none;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+
+    transition: all ease 0.25s;
+}
+
+@media (max-width: 600px) {
+    .tools > div > button {
+        width: 98%;
+        height: 1.5rem;
+        
+        padding: 0rem;
+        margin: 0rem;
+    }
+}
+
+.tools > div > button:hover {
+    transform: translateY(-1px);
+}
+
+.tools > div > button:active {
+    transform: translateY(1px);
+}
+
+.tools > div > button > p {
+    color: white;
+    font-size: 1rem;
+    font-family: "poppins";
+}
+
+@media (max-width: 600px) {
+    .tools > div > button > p {
+        font-size: 0.9rem;
+    }
+}
+
+
+.toolsLeft {
+    width: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.toolsLeft > button {
+    margin-right: 0.5rem;
+}
+
+.toolsRight {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.toolsRight > button {
+    margin-left: 0.5rem;
+}
+
+@media (max-width: 600px) {
+    .toolsLeft {
+        height: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .toolsRight {
+        height: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.mainContainer {
+    width: 100%;
+    height: 75%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.repListing {
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+
+    gap: 0.5rem;
+}
+
+@media (max-width: 1350px) {
+    .repListing {
+        grid-template-columns: repeat(4, 1fr);
+        overflow-y: scroll;
+    }
+}
+
+@media (max-width: 1050px) {
+    .repListing {
+        grid-template-columns: repeat(3, 1fr);
+        overflow-y: scroll;
+    }
+}
+
+@media (max-width: 800px) {
+    .repListing {
+        grid-template-columns: repeat(1, 1fr);
+        overflow-y: scroll;
+    }
+}
+
+
+.spinner {
+    border: 0.25rem solid rgb(120, 120, 143);
+    border-top: 0.25rem solid rgb(41, 41, 54);
+    border-bottom: 0.25rem solid rgb(41, 41, 54);
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

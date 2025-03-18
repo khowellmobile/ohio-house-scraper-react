@@ -1,4 +1,4 @@
-import PeakItem from "./PeakItem.js";
+import PeakItem from "../items/PeakItem.js";
 import classes from "./PeakModal.module.css";
 import { useEffect, useState } from "react";
 

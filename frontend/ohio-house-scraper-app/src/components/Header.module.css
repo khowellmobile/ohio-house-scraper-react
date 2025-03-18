@@ -13,3 +13,9 @@
     color: white;
     font-weight: 400;
 }
+
+@media (max-width: 500px) {
+    .mainContainer > h1 {
+        font-size: 1.4rem;
+    }
+}

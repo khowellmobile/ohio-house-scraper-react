@@ -1,16 +1,14 @@
 import { useState } from "react";
 
 import classes from "./RepItem.module.css";
-import { ReactComponent as CheckedUserIcon } from "../assets/svgs/checked-user-icon.svg";
-import { ReactComponent as QuestionUserIcon } from "../assets/svgs/question-user-icon.svg";
-import { ReactComponent as PenUserIcon } from "../assets/svgs/pen-user-icon.svg";
-import { ReactComponent as EyeIcon } from "../assets/svgs/eye-icon.svg";
-import { ReactComponent as PlayIcon } from "../assets/svgs/play-icon.svg";
-import { ReactComponent as RefreshIcon } from "../assets/svgs/refresh-icon.svg";
-import { ReactComponent as NoRefreshIcon } from "../assets/svgs/no-refresh-icon.svg";
-import PeakModal from "./PeakModal";
+import { ReactComponent as CheckedUserIcon } from "../../assets/svgs/checked-user-icon.svg";
+import { ReactComponent as QuestionUserIcon } from "../../assets/svgs/question-user-icon.svg";
+import { ReactComponent as PenUserIcon } from "../../assets/svgs/pen-user-icon.svg";
+import { ReactComponent as EyeIcon } from "../../assets/svgs/eye-icon.svg";
+import PeakModal from "../modals/PeakModal";
 
-const RepItem = ({ repName, repInfo, canRefresh }) => {
+const RepItem = ({ repName, repInfo }) => {
+
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleCloseModal = () => {
@@ -22,7 +20,6 @@ const RepItem = ({ repName, repInfo, canRefresh }) => {
     };
 
     const getStatusIcon = (status) => {
-/*         console.log(status) */
         switch (status) {
             case "checked":
                 return <CheckedUserIcon className={`${classes.statusIcon}`} />;

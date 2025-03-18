@@ -1,9 +1,9 @@
 import classes from "./Body.module.css";
 import { useState, useEffect, useCallback } from "react";
-import HelloModal from "../HelloModal";
-import RepItem from "../RepItem";
-import MsgModal from "../MsgModal";
-import FieldDropdown from "../FieldDropdown";
+import HelloModal from "./modals/HelloModal";
+import RepItem from "./items/RepItem";
+import MsgModal from "./modals/MsgModal";
+import FieldDropdown from "./FieldDropdown";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
@@ -39,7 +39,9 @@ const Body = () => {
 
         setLockSocket(true);
 
-        const socket = new WebSocket("ws://localhost:65432");
+        
+        /* const socket = new WebSocket("ws://3.146.35.114:65432"); */
+        const socket = new WebSocket("ws://localhost:50000");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server");
@@ -98,6 +100,7 @@ const Body = () => {
 
     const handleRepUpdate = (message) => {
         let status_mode;
+
         if ("rep_name" in message) {
             if (message["msg"].includes("Finished")) {
                 status_mode = "checked";
@@ -249,6 +252,7 @@ const Body = () => {
                             <p>Run Scraper</p>
                         </button>
                         <FieldDropdown matchFieldLists={matchFieldLists} />
+                        {isScraping && <div className={classes.spinner}></div>}
                     </div>
                     <div className={classes.toolsRight}>
                         <button onClick={() => downloadReps()} disabled={isScraping}>
@@ -258,7 +262,6 @@ const Body = () => {
                             <p>Message Log</p>
                         </button>
                     </div>
-                    {isScraping && <div className={classes.spinner}></div>}
                 </div>
                 <div className={classes.repListing}>
                     {Object.entries(reps).map(([key, repInfo], index) => (
