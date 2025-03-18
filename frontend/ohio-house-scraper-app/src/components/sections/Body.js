@@ -1,9 +1,9 @@
 import classes from "./Body.module.css";
 import { useState, useEffect, useCallback } from "react";
-import HelloModal from "./modals/HelloModal";
-import RepItem from "./items/RepItem";
-import MsgModal from "./modals/MsgModal";
-import FieldDropdown from "./FieldDropdown";
+import HelloModal from "../modals/HelloModal";
+import RepItem from "../items/RepItem";
+import MsgModal from "../modals/MsgModal";
+import FieldDropdown from "../FieldDropdown";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
