@@ -1,0 +1,8 @@
+.mainContainer {
+    height: 2.6rem;
+    width: 12.5rem;
+    margin-right: 0.5rem;
+
+    background-color: rgb(41, 41, 54);
+    border-radius: 0.25rem;
+}

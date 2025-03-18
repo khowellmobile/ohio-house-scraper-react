@@ -4,6 +4,8 @@ import HelloModal from "../modals/HelloModal";
 import RepItem from "../items/RepItem";
 import MsgModal from "../modals/MsgModal";
 import FieldDropdown from "../FieldDropdown";
+import Toggle from "../Toggle";
+import SaveOutputButton from "../SaveOutputButton";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
@@ -39,7 +41,6 @@ const Body = () => {
 
         setLockSocket(true);
 
-        
         /* const socket = new WebSocket("ws://3.146.35.114:65432"); */
         const socket = new WebSocket("ws://localhost:50000");
 
@@ -145,59 +146,6 @@ const Body = () => {
         setReps(newReps);
     };
 
-    const downloadReps = () => {
-        let headers;
-
-        headers = [
-            "Name",
-            "Hometown",
-            "Address",
-            "Phone",
-            "Fax",
-            "Education",
-            "Politics",
-            "Employment",
-            "Community",
-            "Committees",
-            "Legislation",
-            "Image",
-            "Image_URL",
-        ];
-
-        let csvContent = headers.join("\t") + "\n";
-
-        Object.entries(reps).forEach(([key, name]) => {
-            let row;
-            row = [
-                key,
-                name.hometown,
-                name.address,
-                name.phone,
-                name.fax,
-                name.education,
-                name.politics,
-                name.employment,
-                name.community,
-                name.committees,
-                name.legislation,
-                name.image_formula,
-                name.image_url,
-            ].join("\t");
-
-            csvContent += row + "\n";
-        });
-
-        const blob = new Blob([csvContent], { type: "text/plain" });
-
-        // Create a download link for the CSV file
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "representatives_data.txt";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
     const handleCloseHelloModal = () => {
         setIsHelloModalOpen(false);
     };
@@ -255,9 +203,7 @@ const Body = () => {
                         {isScraping && <div className={classes.spinner}></div>}
                     </div>
                     <div className={classes.toolsRight}>
-                        <button onClick={() => downloadReps()} disabled={isScraping}>
-                            <p>Save Output</p>
-                        </button>
+                        <Toggle />
                         <button onClick={() => setIsMsgModalOpen(true)}>
                             <p>Message Log</p>
                         </button>
@@ -267,6 +213,7 @@ const Body = () => {
                     {Object.entries(reps).map(([key, repInfo], index) => (
                         <RepItem key={index} repName={key} repInfo={repInfo} />
                     ))}
+                    <SaveOutputButton reps={reps} isScraping={isScraping} />
                 </div>
             </div>
         </>
