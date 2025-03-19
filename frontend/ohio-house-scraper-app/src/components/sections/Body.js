@@ -7,6 +7,8 @@ import FieldDropdown from "../FieldDropdown";
 import Toggle from "../Toggle";
 import SaveOutputButton from "../SaveOutputButton";
 
+import savedJsonData from "../../jsonData/savedScrape.json";
+
 const Body = () => {
     const [messages, setMessages] = useState([]);
     const [isScraping, setIsScraping] = useState(false);
@@ -161,6 +163,9 @@ const Body = () => {
 
     const toggleSaved = useCallback((isSaved) => {
         setUseSaved(isSaved);
+        if (isSaved) {
+            setCsvJson(savedJsonData);
+        }
     }, []);
 
     /**
@@ -173,11 +178,13 @@ const Body = () => {
             const populateReps = () => {
                 Object.entries(csvJson).forEach(([name, person]) => {
                     if (reps[name]) {
+                        const updatedPerson = useSaved ? { ...person, status: "checked" } : { ...person };
+
                         setReps((prevReps) => ({
                             ...prevReps,
                             [name]: {
                                 ...prevReps[name],
-                                ...person,
+                                ...updatedPerson,
                             },
                         }));
                     }
@@ -191,7 +198,7 @@ const Body = () => {
     // Will cause warning. Ignore the warning.
     useEffect(() => {
         handleScraperCommand("get_rep_names");
-    }, []); // Empty to only run on mounts
+    }, []); // Empty to only run on mount
 
     return (
         <>
@@ -201,7 +208,7 @@ const Body = () => {
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
                     <div className={classes.toolsLeft}>
-                        <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping}>
+                        <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping && useSaved}>
                             <p>Run Scraper</p>
                         </button>
                         <FieldDropdown matchFieldLists={matchFieldLists} />
