@@ -1,0 +1,70 @@
+.mainContainer {
+    height: 2.6rem;
+    width: 10.5rem;
+    margin-right: 0.5rem;
+
+    background-color: rgb(207, 207, 207);
+    border: 2px solid rgb(41, 41, 54);
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .mainContainer {
+        width: calc(98%);
+        height: 1.5rem;
+        margin: 0rem;
+    }
+}
+
+.thumb {
+    width: calc(5.25rem - 4px);
+    height: calc(2.6rem - 4px);
+
+    background-color: rgb(41, 41, 54);
+
+    position: absolute;
+
+    z-index: 1;
+
+    transition: all 0.25s ease;
+}
+
+@media (max-width: 600px) {
+    .thumb {
+        width: calc(98% / 4 - 7px);
+        height: calc(1.5rem - 4px);
+    }
+}
+
+.right {
+    transform: translateX(calc(100% + 4px));
+}
+
+.words {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+}
+
+.words > div {
+    width: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+    z-index: 2;
+}
+
+.words > div > p {
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .words > div > p {
+        font-size: 0.9rem;
+    }
+}

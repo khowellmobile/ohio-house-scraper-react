@@ -1,9 +1,13 @@
 import classes from "./Body.module.css";
 import { useState, useEffect, useCallback } from "react";
-import HelloModal from "./modals/HelloModal";
-import RepItem from "./items/RepItem";
-import MsgModal from "./modals/MsgModal";
-import FieldDropdown from "./FieldDropdown";
+import HelloModal from "../modals/HelloModal";
+import RepItem from "../items/RepItem";
+import MsgModal from "../modals/MsgModal";
+import FieldDropdown from "../FieldDropdown";
+import Toggle from "../Toggle";
+import SaveOutputButton from "../SaveOutputButton";
+
+import savedJsonData from "../../jsonData/savedScrape.json";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
@@ -13,10 +17,18 @@ const Body = () => {
     const [csvJson, setCsvJson] = useState();
     const [lockSocket, setLockSocket] = useState(false);
     const [reps, setReps] = useState({});
+    const [useSaved, setUseSaved] = useState(false);
 
     const [fieldList, setFieldList] = useState([]);
 
     const handleScraperCommand = (command) => {
+        if (useSaved) {
+            alert(
+                "Please toggle to Current data mode in order to run the scraper. The page is currently set to Saved data mode"
+            );
+            return;
+        }
+
         if (command === "start_scraper") {
             if (fieldList.length === 0) {
                 alert("Please select at least one field set in the Selected Fields dropdown to run scraper");
@@ -39,7 +51,6 @@ const Body = () => {
 
         setLockSocket(true);
 
-        
         /* const socket = new WebSocket("ws://3.146.35.114:65432"); */
         const socket = new WebSocket("ws://localhost:50000");
 
@@ -145,59 +156,6 @@ const Body = () => {
         setReps(newReps);
     };
 
-    const downloadReps = () => {
-        let headers;
-
-        headers = [
-            "Name",
-            "Hometown",
-            "Address",
-            "Phone",
-            "Fax",
-            "Education",
-            "Politics",
-            "Employment",
-            "Community",
-            "Committees",
-            "Legislation",
-            "Image",
-            "Image_URL",
-        ];
-
-        let csvContent = headers.join("\t") + "\n";
-
-        Object.entries(reps).forEach(([key, name]) => {
-            let row;
-            row = [
-                key,
-                name.hometown,
-                name.address,
-                name.phone,
-                name.fax,
-                name.education,
-                name.politics,
-                name.employment,
-                name.community,
-                name.committees,
-                name.legislation,
-                name.image_formula,
-                name.image_url,
-            ].join("\t");
-
-            csvContent += row + "\n";
-        });
-
-        const blob = new Blob([csvContent], { type: "text/plain" });
-
-        // Create a download link for the CSV file
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "representatives_data.txt";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
     const handleCloseHelloModal = () => {
         setIsHelloModalOpen(false);
     };
@@ -210,6 +168,13 @@ const Body = () => {
         setFieldList(list);
     }, []);
 
+    const toggleSaved = useCallback((isSaved) => {
+        setUseSaved(isSaved);
+        if (isSaved) {
+            setCsvJson(savedJsonData);
+        }
+    }, []);
+
     /**
      * Populates reps with data when csvJson is recieved.
      * Will cause warning since React wants reps inside dependency array but that would cause
@@ -220,11 +185,13 @@ const Body = () => {
             const populateReps = () => {
                 Object.entries(csvJson).forEach(([name, person]) => {
                     if (reps[name]) {
+                        const updatedPerson = useSaved ? { ...person, status: "checked" } : { ...person };
+
                         setReps((prevReps) => ({
                             ...prevReps,
                             [name]: {
                                 ...prevReps[name],
-                                ...person,
+                                ...updatedPerson,
                             },
                         }));
                     }
@@ -238,7 +205,7 @@ const Body = () => {
     // Will cause warning. Ignore the warning.
     useEffect(() => {
         handleScraperCommand("get_rep_names");
-    }, []); // Empty to only run on mounts
+    }, []); // Empty to only run on mount
 
     return (
         <>
@@ -248,16 +215,14 @@ const Body = () => {
             <div className={classes.mainContainer}>
                 <div className={classes.tools}>
                     <div className={classes.toolsLeft}>
-                        <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping}>
+                        <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping && useSaved}>
                             <p>Run Scraper</p>
+                            {isScraping && <div className={classes.spinner}></div>}
                         </button>
                         <FieldDropdown matchFieldLists={matchFieldLists} />
-                        {isScraping && <div className={classes.spinner}></div>}
                     </div>
                     <div className={classes.toolsRight}>
-                        <button onClick={() => downloadReps()} disabled={isScraping}>
-                            <p>Save Output</p>
-                        </button>
+                        <Toggle toggleSaved={toggleSaved} />
                         <button onClick={() => setIsMsgModalOpen(true)}>
                             <p>Message Log</p>
                         </button>
@@ -267,6 +232,7 @@ const Body = () => {
                     {Object.entries(reps).map(([key, repInfo], index) => (
                         <RepItem key={index} repName={key} repInfo={repInfo} />
                     ))}
+                    <SaveOutputButton reps={reps} isScraping={isScraping} />
                 </div>
             </div>
         </>

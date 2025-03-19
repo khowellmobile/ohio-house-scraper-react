@@ -107,7 +107,7 @@
 @media (max-width: 600px) {
     .dropDownContent {
         top: calc(1.5rem + 1px);
-        right: -0.4rem;
+        left: -3rem;
     }
 }
 
