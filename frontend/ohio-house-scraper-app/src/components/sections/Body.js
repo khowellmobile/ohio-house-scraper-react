@@ -217,9 +217,9 @@ const Body = () => {
                     <div className={classes.toolsLeft}>
                         <button onClick={() => handleScraperCommand("start_scraper")} disabled={isScraping && useSaved}>
                             <p>Run Scraper</p>
+                            {isScraping && <div className={classes.spinner}></div>}
                         </button>
                         <FieldDropdown matchFieldLists={matchFieldLists} />
-                        {isScraping && <div className={classes.spinner}></div>}
                     </div>
                     <div className={classes.toolsRight}>
                         <Toggle toggleSaved={toggleSaved} />
