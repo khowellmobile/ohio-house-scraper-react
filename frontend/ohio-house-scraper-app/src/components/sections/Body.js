@@ -22,6 +22,13 @@ const Body = () => {
     const [fieldList, setFieldList] = useState([]);
 
     const handleScraperCommand = (command) => {
+        if (useSaved) {
+            alert(
+                "Please toggle to Current data mode in order to run the scraper. The page is currently set to Saved data mode"
+            );
+            return;
+        }
+
         if (command === "start_scraper") {
             if (fieldList.length === 0) {
                 alert("Please select at least one field set in the Selected Fields dropdown to run scraper");
