@@ -15,6 +15,7 @@ const Body = () => {
     const [csvJson, setCsvJson] = useState();
     const [lockSocket, setLockSocket] = useState(false);
     const [reps, setReps] = useState({});
+    const [useSaved, setUseSaved] = useState(false);
 
     const [fieldList, setFieldList] = useState([]);
 
@@ -158,6 +159,10 @@ const Body = () => {
         setFieldList(list);
     }, []);
 
+    const toggleSaved = useCallback((isSaved) => {
+        setUseSaved(isSaved);
+    }, []);
+
     /**
      * Populates reps with data when csvJson is recieved.
      * Will cause warning since React wants reps inside dependency array but that would cause
@@ -203,7 +208,7 @@ const Body = () => {
                         {isScraping && <div className={classes.spinner}></div>}
                     </div>
                     <div className={classes.toolsRight}>
-                        <Toggle />
+                        <Toggle toggleSaved={toggleSaved} />
                         <button onClick={() => setIsMsgModalOpen(true)}>
                             <p>Message Log</p>
                         </button>
