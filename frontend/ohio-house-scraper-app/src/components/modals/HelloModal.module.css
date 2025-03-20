@@ -15,7 +15,7 @@
 
 .mainContainer {
     width: 50rem;
-    height: 30rem;
+    min-height: 30rem;
     padding: 1.5rem;
 
     border-radius: 0.5rem;

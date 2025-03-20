@@ -16,8 +16,8 @@ const HelloModal = ({ handleCloseModal }) => {
                         environment is unique, and new issues are being ironed out continuously.
                     </p>
                     <p>
-                        If the "Run Scraper" button is clicked and nothing happens, congratulations—you've found a bug
-                        in the code! All bugs are promptly identified and stored to be fixed quickly.
+                        If there is an error, switched to "Saved mode". This will display data from a previous run of
+                        the scraper (3-18-2025)
                     </p>
                     <p>
                         Improvements to the application are ongoing, so there may be some downtime when uploading a new
