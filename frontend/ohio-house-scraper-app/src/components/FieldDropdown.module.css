@@ -133,11 +133,12 @@
     border-bottom: 1px solid rgb(216, 216, 216);
 }
 
-@media (min-width: 800px) {
+/* Hover effect ONLY to be used above desktop breakpoint */
+@media (min-width: 1024px) {
     .dropDownContent > span:hover {
-      background-color: rgba(0, 0, 0, 0.1);
+        background-color: rgba(0, 0, 0, 0.1);
     }
-  }
+}
 .highlighted {
     background-color: rgba(62, 62, 114, 0.267);
 }
