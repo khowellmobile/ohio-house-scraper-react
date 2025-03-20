@@ -16,8 +16,8 @@ const HelloModal = ({ handleCloseModal }) => {
                         environment is unique, and new issues are being ironed out continuously.
                     </p>
                     <p>
-                        If there are any issues, set the toggle to 'Saved.' The Saved mode uses information from a previous
-                        run of the scraper on 3/18/2025.
+                        If there is an error, set the toggle to "Saved mode". This will display data from a previous run of
+                        the scraper (3-18-2025)
                     </p>
                     <p>
                         Improvements to the application are ongoing, so there may be some downtime when uploading a new
