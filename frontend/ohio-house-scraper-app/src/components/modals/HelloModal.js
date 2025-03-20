@@ -16,16 +16,16 @@ const HelloModal = ({ handleCloseModal }) => {
                         environment is unique, and new issues are being ironed out continuously.
                     </p>
                     <p>
-                        If the "Run Scraper" button is clicked and nothing happens, congratulations—you've found a bug
-                        in the code! All bugs are promptly identified and stored to be fixed quickly.
+                        If there are issues, set the toggle to "Saved". Saved mode uses saved information of a past run
+                        of the scraper on 3/18/2025.
                     </p>
                     <p>
                         Improvements to the application are ongoing, so there may be some downtime when uploading a new
-                        build. In this case, come back in a few minutes, and it'll be up and running again.
+                        build.
                     </p>
                     <p>
-                        To prevent surpassing AWS resource limits, the application's backend will run from 8:30 AM to
-                        3:30 PM on weekdays. Outside these times, the 'Run Scraper' button will be locked.
+                        The application's backend will run from 8:30 AM to 3:30 PM on weekdays. Outside these times, the
+                        'Run Scraper' button will be locked.
                     </p>
                 </div>
                 <button className={classes.closeModalButton} onClick={handleClose}>
