@@ -463,9 +463,6 @@ async def process_batch(
         )
         tasks.append(task)
 
-        """ # Sleep to avoid resource exhaustion errors
-        await asyncio.sleep(4) """
-
     await asyncio.gather(*tasks)
 
 
@@ -512,7 +509,7 @@ async def create_run_batches(
         tasks.append(task)
 
         # Wait 60 seconds before launching the next batch
-        if i < total_batches - 1:
+        if i < total_batches - 1 and "bio" in fields:
             add_to_ui_queue(
                 '{"msg_type": "update", "msg": "Waiting 60 seconds to launch next batch..."}'
             )
