@@ -8,6 +8,7 @@ import Toggle from "../Toggle";
 import SaveOutputButton from "../SaveOutputButton";
 
 import savedJsonData from "../../jsonData/savedScrape.json";
+import savedRepNames from "../../jsonData/repNames.json";
 
 const Body = () => {
     const [messages, setMessages] = useState([]);
@@ -22,7 +23,7 @@ const Body = () => {
     const [fieldList, setFieldList] = useState([]);
 
     const handleScraperCommand = (command) => {
-        if (useSaved) {
+        if (useSaved && command !== "get_rep_names") {
             alert(
                 "Please toggle to Current data mode in order to run the scraper. The page is currently set to Saved data mode"
             );
@@ -172,6 +173,9 @@ const Body = () => {
         setUseSaved(isSaved);
         if (isSaved) {
             setCsvJson(savedJsonData);
+            initializeReps(savedRepNames["msg"]);
+        } else {
+            handleScraperCommand("get_rep_names");
         }
     }, []);
 
