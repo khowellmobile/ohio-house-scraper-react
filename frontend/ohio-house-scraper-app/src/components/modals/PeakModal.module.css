@@ -75,6 +75,7 @@
 
 .infoListing {
     width: 100%;
-
     padding: 0rem 0.5rem;
+
+    overflow-y: auto;
 }
