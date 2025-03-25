@@ -172,12 +172,18 @@ const Body = () => {
     const toggleSaved = useCallback((isSaved) => {
         setUseSaved(isSaved);
         if (isSaved) {
-            setCsvJson(savedJsonData);
             initializeReps(savedRepNames["msg"]);
+
+            // Spread operator required for change to trigger re-render
+            setCsvJson({ ...savedJsonData });
         } else {
             handleScraperCommand("get_rep_names");
         }
     }, []);
+
+    /*     useEffect(() => {
+        console.log("useSaved: ", useSaved);
+    }, [useSaved]); */
 
     /**
      * Populates reps with data when csvJson is recieved.
@@ -185,6 +191,7 @@ const Body = () => {
      * unwanted effects such as making reps match csv json anytime it is changed
      */
     useEffect(() => {
+        console.log("settings");
         if (csvJson) {
             const populateReps = () => {
                 Object.entries(csvJson).forEach(([name, person]) => {
