@@ -191,7 +191,6 @@ const Body = () => {
      * unwanted effects such as making reps match csv json anytime it is changed
      */
     useEffect(() => {
-        console.log("settings");
         if (csvJson) {
             const populateReps = () => {
                 Object.entries(csvJson).forEach(([name, person]) => {
