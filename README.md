@@ -16,7 +16,7 @@ Click [here](https://wugtools.com/) for current hosting location
 ## Features
 - **Real-time Scraping**: The scraper fetches data about each representative and sends status updates to the frontend using WebSockets.
 - **Error Handling**: The scraper will retry errors on failed attempts and provide updates on the frontend.
-- **CSV Output**: After scraping, the user can download the scraped data in a `.txt` format, formatted like as a tab delimited text file.
+- **Downloadable Output**: After scraping, the user can download the scraped data in a `.txt` format, formatted like as a tab delimited text file.
 - **Batch Processing**: Representatives are processed in batches for efficiency and consistency.
 - **AI Data Extraction**: Uses Gemini to extract data from the representatives biography.
 
