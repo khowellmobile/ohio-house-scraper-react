@@ -11,16 +11,21 @@ import savedJsonData from "../../jsonData/savedScrape.json";
 import savedRepNames from "../../jsonData/repNames.json";
 
 const Body = () => {
+    // State variables for application functionality
     const [messages, setMessages] = useState([]);
-    const [isScraping, setIsScraping] = useState(false);
-    const [isHelloModalOpen, setIsHelloModalOpen] = useState(true);
-    const [isMsgModalOpen, setIsMsgModalOpen] = useState(false);
     const [csvJson, setCsvJson] = useState();
     const [lockSocket, setLockSocket] = useState(false);
     const [reps, setReps] = useState({});
     const [useSaved, setUseSaved] = useState(false);
-
     const [fieldList, setFieldList] = useState([]);
+    const [isScraping, setIsScraping] = useState(false);
+
+    // State variables for UI functionality
+    const [isHelloModalOpen, setIsHelloModalOpen] = useState(true);
+    const [isMsgModalOpen, setIsMsgModalOpen] = useState(false);
+
+    const validFields = ["info", "bio", "committees", "legislation", "image_url"];
+    const validCommands = ["get_rep_names", "start_scraper", "get_rep_names"];
 
     const handleScraperCommand = (command) => {
         if (useSaved && command !== "get_rep_names") {
@@ -47,6 +52,17 @@ const Body = () => {
     const handleScraper = (initial_command) => {
         if (lockSocket) {
             console.log("Web Socket currently in use. Wait a few minutes.");
+            return;
+        }
+
+        if (!validCommands.includes(initial_command)) {
+            console.log("Command not recognized");
+            return;
+        }
+
+        const isValidFieldList = fieldList.every((field) => validFields.includes(field));
+        if (!isValidFieldList) {
+            console.log("Invalid field list");
             return;
         }
 

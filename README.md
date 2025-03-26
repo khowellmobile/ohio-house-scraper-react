@@ -7,6 +7,8 @@ It scrapes data such as:
 - Contact information (address, phone, fax)
 - Biography details (education, politics, employment, community involvement)
 - Committees the representatives are part of
+- Primary Legislation
+- Headshot URLs
 
 The application is built using a **React** frontend for the user interface and **Python** (with `aiohttp`, `asyncio`, `BeautifulSoup`, and **WebSocket**) for the backend scraper.
 
