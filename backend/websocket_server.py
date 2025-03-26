@@ -42,6 +42,7 @@ import json
 import queue
 import logging
 import time
+import re
 
 from houseScraper_async import run_scraper as run_scraper
 from utils import get_representative_list
@@ -56,6 +57,26 @@ logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
+
+BANNED_PATTERNS = [
+    r"select",
+    r"insert",
+    r"update",
+    r"drop",
+    r"delete",  # SQL-related
+    r"script",
+    r"eval",
+    r"exec",
+    r"alert",
+    r"document",  # XSS-related
+    r"union",
+    r"<!--",
+    r"-->",  # SQL injection and comment injection
+    r"base64",
+    r"javascript",  # Other potentially harmful content
+    r"@import",
+    r"@keyframes",  # CSS or other injection points
+]
 
 
 async def receive_from_frontend(websocket):
@@ -72,6 +93,12 @@ async def receive_from_frontend(websocket):
     while True:
         try:
             message = await websocket.recv()
+
+            if any(
+                re.search(pattern, message, re.IGNORECASE)
+                for pattern in BANNED_PATTERNS
+            ):
+                raise ValueError("Malicious content detected in message.")
 
             msg_json = json.loads(message)
 
@@ -90,6 +117,9 @@ async def receive_from_frontend(websocket):
         except websockets.exceptions.ConnectionClosed:
             # If the connection is closed, stop listening for messages
             print("WebSocket connection closed. Stopping message receiving.")
+            break
+        except ValueError as ve:
+            print(f"Invalid message content: {ve}")
             break
 
         await asyncio.sleep(0.1)

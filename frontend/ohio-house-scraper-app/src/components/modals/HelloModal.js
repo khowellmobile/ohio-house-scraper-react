@@ -10,22 +10,18 @@ const HelloModal = ({ handleCloseModal }) => {
             <div className={classes.mainContainer}>
                 <h2>Welcome to The Ohio House Scraper</h2>
                 <div className={classes.textContent}>
-                    <h3>A few things to keep in mind:</h3>
+                    <h3>How to:</h3>
                     <p>
-                        The application is still a work in progress and may not function correctly in every case. Every
-                        environment is unique, and new issues are being ironed out continuously.
+                        Select the fields you want scraped and click "Run Scraper". The represenative icons will change
+                        to show progress.
                     </p>
                     <p>
-                        If there is an error, set the toggle to "Saved mode". This will display data from a previous run of
-                        the scraper (3-18-2025)
+                        Toggling to Saved mode will display data from a previous run of the scraper (3-18-2025). In the
+                        event of any issues Saved mode will still work.
                     </p>
                     <p>
-                        Improvements to the application are ongoing, so there may be some downtime when uploading a new
-                        build.
-                    </p>
-                    <p>
-                        The application's backend will run from 8:30 AM to 3:30 PM on weekdays. Outside these times, the
-                        'Run Scraper' button will be locked.
+                        The application's backend will run from 8:30 AM to 3:30 PM on weekdays. Outside these times, use
+                        Saved mode for information.
                     </p>
                 </div>
                 <button className={classes.closeModalButton} onClick={handleClose}>
