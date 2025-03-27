@@ -556,8 +556,16 @@ async def run_scraper(fields, add_to_ui_queue, sendJson, websocket):
                 '{"msg_type": "update", "msg": "Starting to process errors..."}'
             )
 
+        error_queue_counter = 0
+
         while not error_queue.empty():
-            await asyncio.sleep(4)
+            if error_queue_counter > 75:
+                add_to_ui_queue(
+                    '{"msg_type": "error", "msg": "Error Queue Overloaded. Wait a few minutes and try again"}'
+                )
+                break
+
+            await asyncio.sleep(5)
             await process_rep(
                 session,
                 error_queue.get(),
@@ -566,6 +574,7 @@ async def run_scraper(fields, add_to_ui_queue, sendJson, websocket):
                 result_queue,
                 error_queue,
             )
+            error_queue_counter += 1
 
         # Adding corrected reps to peeople
         while not result_queue.empty():
