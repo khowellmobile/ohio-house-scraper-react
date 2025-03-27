@@ -6,6 +6,7 @@ between the frontend and backend of the scraper. This file also handles communic
 The scraper itself and this file.
 
 Functions:
+    is_rate_limited(client_ip): Checks if the user surpases the rate limit.
     async def receive_from_frontend(websocket): Gets messages from front end to receive commands
     async def send_to_frontend(websocket): Sends messages to the front end from print_queue
     def add_to_ui_queue(text): Add messages to the print_queue (used as callback)
@@ -21,6 +22,9 @@ Libraries:
     queue: used for holding messages for frontend.
     loggin: used to log the scraper runs for debugging.
     time: used to delay to make sure all messages have been sent
+    re: used to pattern match for validation
+    defaultdict: used to create dictionary for timestamps
+    datetime: used to connection time stamps
 
 Imports:
     houseScraper_async.py
@@ -30,10 +34,15 @@ Imports:
 
 Global Variables:
     print_queue: Holds messages to be sent to the front end.
+    RATE_LIMIT: The number of requests users cna make in the time window
+    RATE_LIMIT_WINDOW: Window size used for rate limiting
+    request_timestamps: Dictionary of user connection timestamps
+    BANNED_PATTERNS: List of patterns not allowed in messages
+
 
 Author: Kent Howell [khowellmobile@gmail.com]
 Date: 2/18/2025
-Last Update: 3/13/2025
+Last Update: 3/27/2025
 """
 
 import asyncio
