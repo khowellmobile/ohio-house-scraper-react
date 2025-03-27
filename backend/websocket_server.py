@@ -43,6 +43,8 @@ import queue
 import logging
 import time
 import re
+from collections import defaultdict
+from datetime import datetime, timedelta
 
 from houseScraper_async import run_scraper as run_scraper
 from utils import get_representative_list
@@ -50,6 +52,11 @@ from utils import get_representative_list
 
 # This will hold the text updates for the frontend.
 print_queue = queue.Queue()
+
+# Rate Limiting Setup
+RATE_LIMIT = 5
+RATE_LIMIT_WINDOW = 60
+request_timestamps = defaultdict(list)
 
 
 logging.basicConfig(
@@ -63,20 +70,48 @@ BANNED_PATTERNS = [
     r"insert",
     r"update",
     r"drop",
-    r"delete",  # SQL-related
+    r"delete",
     r"script",
     r"eval",
     r"exec",
     r"alert",
-    r"document",  # XSS-related
+    r"document",
     r"union",
     r"<!--",
-    r"-->",  # SQL injection and comment injection
+    r"-->",
     r"base64",
-    r"javascript",  # Other potentially harmful content
+    r"javascript",
     r"@import",
-    r"@keyframes",  # CSS or other injection points
+    r"@keyframes",
 ]
+
+
+def is_rate_limited(client_ip):
+    """
+    Checks if a client IP has exceeded the rate limit within the time window.
+
+    Args:
+        client_ip (str): The IP address of the client trying to make a request.
+
+    Returns:
+        bool: True if the IP is rate-limited (exceeded the request limit), False otherwise.
+    """
+    current_time = datetime.now()
+
+    # Get timestamps in window
+    request_timestamps[client_ip] = [
+        timestamp
+        for timestamp in request_timestamps[client_ip]
+        if current_time - timestamp < timedelta(seconds=RATE_LIMIT_WINDOW)
+    ]
+
+    # Return true if rate is exceeded
+    if len(request_timestamps[client_ip]) >= RATE_LIMIT:
+        return True
+
+    # If no exceeded, log time stamp and return False
+    request_timestamps[client_ip].append(current_time)
+    return False
 
 
 async def receive_from_frontend(websocket):
@@ -93,6 +128,16 @@ async def receive_from_frontend(websocket):
     while True:
         try:
             message = await websocket.recv()
+
+            client_ip = websocket.remote_address[0]
+
+            if is_rate_limited(client_ip):
+                error_msg = json.dumps(
+                    "Rate limit exceeded. Please wait before making another request."
+                )
+                await websocket.send(f'{{"msg_type":"error", "msg": {error_msg}}}')
+                await websocket.close()
+                return
 
             if any(
                 re.search(pattern, message, re.IGNORECASE)
