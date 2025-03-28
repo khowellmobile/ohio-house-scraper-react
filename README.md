@@ -77,8 +77,7 @@ Click [here](https://wugtools.com/) for current hosting location
 7. The application should now open in local host. Ensure to change the IP address in Body.js and websocket_server.py to localhost.
 
 ## Notes and Caveats
-- The application is still being worked on and imrpoved. As such the level of security, error handling, and interaction will increase over time.
-- Only one user should be running the scraper at a time. The requests will quickly exceed the limits of the OhioHouse.gov website. There is a solution in place to rerun denied requests after a specified time but the time for the scraper to run will increase significantly.
+- Only one user should be running the scraper at a time. The requests will quickly exceed the limits of the OhioHouse.gov website. There is a solution in place to rerun denied requests after a specified time but the time for the scraper to run will increase significantly. A fix is being worked on.
 
     
 
